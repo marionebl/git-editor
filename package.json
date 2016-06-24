@@ -1,0 +1,22 @@
+{
+  "name": "git-editor",
+  "version": "1.0.0",
+  "description": "A terminal editor designed for git",
+  "main": "cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "git",
+    "editor",
+    "cli",
+    "commit"
+  ],
+  "author": "Mario Nebl <mario.nebl@sinnerschrader.com>",
+  "license": "MIT",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "editor-widget": "^1.1.1",
+    "lodash": "^4.13.1"
+  }
+}
