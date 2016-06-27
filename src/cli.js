@@ -1,43 +1,55 @@
 #!/usr/bin/env node
 'use strict';
 
-const editor = './git-editor';
+const editor = './library/git-editor';
 const pkg = require('../package');
 
-if (process.env.NODE_ENV === 'development') {
-  require('babel-register');
-  const live = require('@marionebl/babel-live');
-  const rc = require('rc');
-  var gitEditor = live(require.resolve(editor), {}, pkg.babel);
-} else {
-  var gitEditor = require('./git-editor');
+function getGitEditor() {
+	if (process.env.NODE_ENV === 'development') {
+		require('babel-register');
+		const live = require('@marionebl/babel-live');
+		return live(require.resolve(editor), {}, pkg.babel);
+	}
+	return require('./git-editor');
 }
 
 function main() {
-  const editor = gitEditor('chore(test): input', {
-    title: pkg.name
-  });
-  return Promise.resolve(editor);
+	return new Promise((resolve, reject) => {
+		try {
+			const gitEditor = getGitEditor();
+			const editor = gitEditor('chore(test): input', {
+				title: pkg.name,
+				environment: process.env.NODE_ENV
+			});
+			editor
+				.then(resolve)
+				.catch(reject);
+		} catch (error) {
+			reject(error);
+		}
+	});
 }
 
 main()
-  .then(function(output) {
-    process.exit(0);
-  })
-  .catch(function(error) {
-    setTimeout(() => {
-      if (global.screen) {
-        global.screen.destroy();
-      }
-      throw error;
-    });
-  });
+	.then(() => {
+		process.exit(0);
+	})
+	.catch(error => {
+		if (global.screen) {
+			global.screen.destroy();
+		}
+		setTimeout(() => {
+			throw error;
+		});
+	});
 
-process.on('unhandledRejection', error => {
-  setTimeout(() => {
-    if (global.screen) {
-      global.screen.destroy();
-    }
-    throw error;
-  });
-});
+/* process.on('unhandledRejection', error => {
+	setTimeout(() => {
+		console.log(Object.keys(error));
+		if (global.screen) {
+			global.screen.destroy();
+		}
+		console.log('!'.repeat(100));
+		throw error;
+	});
+}); */

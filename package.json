@@ -2,15 +2,26 @@
   "name": "git-editor",
   "version": "1.0.0",
   "description": "A terminal editor designed for git",
-  "main": "cli.js",
+  "bin": {
+    "git-editor": "dist/cli.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "NODE_ENV=development node src/cli.js",
+    "compile": "babel src -d dist",
+    "test": "xo"
   },
   "babel": {
     "presets": [
       "es2015",
       "stage-0",
       "react"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "xo",
+      "xo/esnext",
+      "xo-react"
     ]
   },
   "keywords": [
@@ -22,12 +33,16 @@
   "author": "Mario Nebl <mario.nebl@sinnerschrader.com>",
   "license": "MIT",
   "dependencies": {
+    "autobind-decorator": "^1.3.3",
     "babel-traverse": "^6.10.4",
     "babel-types": "^6.10.2",
     "blessed": "^0.1.81",
+    "conventional-commits-parser": "^1.2.2",
+    "css-layout": "^1.1.1",
     "glob": "^7.0.5",
     "ignore": "^3.1.3",
     "lodash": "^4.13.1",
+    "meow": "^3.7.0",
     "react": "^0.14.8",
     "react-blessed": "^0.1.7",
     "react-redux": "^4.4.5",
@@ -40,6 +55,9 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.9.0",
-    "rc": "^1.1.6"
+    "eslint-config-xo-react": "^0.8.0",
+    "eslint-plugin-react": "^5.2.2",
+    "rc": "^1.1.6",
+    "xo": "^0.16.0"
   }
 }

@@ -52,14 +52,6 @@ function gitEditor(input, options) {
       }
     });
 
-    type.on('focus', function() {
-      type.setValue('');
-    })
-    
-    type.on('blur', function() {
-      type.setValue('type');
-    });
-
     const scope = blessed.textbox({
       parent: header,
       value: '(scope):',
@@ -74,14 +66,6 @@ function gitEditor(input, options) {
       }
     });
 
-    scope.on('focus', function() {
-      scope.setValue('');
-    });
-
-    scope.on('blur', function() {
-      scope.setValue('(scope):');
-    });
-
     const subject = blessed.textbox({
       parent: header,
       value: 'subject',
@@ -94,6 +78,66 @@ function gitEditor(input, options) {
           fg: 'white'
         }
       }
+    });
+
+    const offsets = Object.defineProperties({}, {
+      0: {
+        value: 0,
+        writeable: false
+      },
+      1: {
+        get: function() {
+          return type.value.length;
+        }
+      },
+      2: {
+        get: function() {
+          return type.value.length + scope.value.length;
+        }
+      }
+    });
+
+
+    type.on('focus', function() {
+      if (type.value === 'type') {
+        type.setValue('');
+      }
+    })
+
+    type.on('keypress', function() {
+      scope.left = offsets[1];
+      subject.left = offsets[2];
+    });
+    
+    type.on('blur', function() {
+      if (type.value === '') {
+        type.setValue('type');
+        type.style.fg = 'grey';
+      } else {
+        type.style.fg = 'white';
+      }
+
+      scope.left = offsets[1];
+      subject.left = offsets[2];
+    });
+
+    scope.on('focus', function() {
+      scope.setValue('');
+    });
+
+    scope.on('keypress', function() {
+      subject.left = offsets[2];
+    });
+
+    scope.on('blur', function() {
+      if (scope.value === '') {
+        scope.setValue('scope');
+        scope.style.fg = 'grey';
+      } else {
+        scope.style.fg = 'white';
+      }
+
+      subject.left = offsets[2];
     });
 
     subject.on('focus', function() {
@@ -163,7 +207,7 @@ function gitEditor(input, options) {
       resolve();
     });
 
-    type.focus();
+    form.focus();
     screen.render();
   });
 }
