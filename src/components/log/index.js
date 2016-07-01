@@ -1,9 +1,12 @@
 const React = require('react');
 const Component = require('react').Component;
 const PropTypes = require('react').PropTypes;
-
+const pure = require('pure-render-decorator');
+const autobind = require('autobind-decorator');
 const connect = require('react-redux').connect;
 
+@pure
+@autobind
 class Log extends Component {
 	static defaultProps = {
 		content: '',

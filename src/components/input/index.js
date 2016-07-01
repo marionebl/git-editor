@@ -2,6 +2,8 @@ const React = require('react');
 const Component = require('react').Component;
 const PropTypes = require('react').PropTypes;
 const noop = require('lodash').noop;
+const pure = require('pure-render-decorator');
+const autobind = require('autobind-decorator');
 
 const styles = {
 	placeholder: {
@@ -10,6 +12,8 @@ const styles = {
 	}
 };
 
+@pure
+@autobind
 class Input extends Component {
 	static propTypes = {
 		focus: PropTypes.bool,
@@ -38,10 +42,7 @@ class Input extends Component {
 
 	constructor(props, context) {
 		super(props, context);
-		this.saveNode = this.saveNode.bind(this);
-		this.handleBlur = this.handleBlur.bind(this);
-		this.handleFocus = this.handleFocus.bind(this);
-		this.handleKeypress = this.handleKeypress.bind(this);
+		this.nodes = {};
 	}
 
 	componentDidMount() {

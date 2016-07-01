@@ -2,8 +2,8 @@ const React = require('react');
 const Component = require('react').Component;
 const PropTypes = require('react').PropTypes;
 const connect = require('react-redux').connect;
-const keys = require('lodash').keys;
-const find = require('lodash').find;
+const pure = require('pure-render-decorator');
+const autobind = require('autobind-decorator');
 
 const area = require('../area');
 const Area = area;
@@ -47,6 +47,7 @@ function getFieldOffset(name, form) {
 		placeholders[name].length;
 }
 
+@pure
 class Form extends Component {
 	static propTypes = {
 		onBlur: PropTypes.func,
@@ -55,14 +56,9 @@ class Form extends Component {
 		form: PropTypes.any
 	};
 
-	nodes = {};
-
 	constructor(props, context) {
 		super(props, context);
-		this.handleBlur = this.handleBlur.bind(this);
-		this.handleFocus = this.handleFocus.bind(this);
-		this.handleKeypress = this.handleKeypress.bind(this);
-		this.saveNode = this.saveNode.bind(this);
+		this.nodes = {};
 	}
 
 	componentDidMount() {
@@ -72,6 +68,7 @@ class Form extends Component {
 		this.nodes.form.focusNext();
 	}
 
+	@autobind
 	handleBlur(e) {
 		this.props.onBlur({
 			type: 'blur',
@@ -79,6 +76,7 @@ class Form extends Component {
 		});
 	}
 
+	@autobind
 	handleFocus(e) {
 		this.props.onFocus({
 			type: 'focus',
@@ -86,6 +84,7 @@ class Form extends Component {
 		});
 	}
 
+	@autobind
 	handleKeypress(e) {
 		this.props.onKeypress({
 			type: 'keypress',
@@ -97,6 +96,7 @@ class Form extends Component {
 		});
 	}
 
+	@autobind
 	saveNode(name) {
 		return ref => {
 			this.nodes[name] = ref;
