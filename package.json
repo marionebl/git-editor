@@ -5,6 +5,7 @@
   "bin": {
     "git-editor": "dist/cli.js"
   },
+	"files": ["dist"],
   "scripts": {
     "start": "NODE_ENV=development node src/cli.js",
     "build": "npm run compile",
