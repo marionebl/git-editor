@@ -5,8 +5,8 @@
 ## Rationale
 
 *  There are various tools helping with commit message drafting
-*  None of them actually helps with the entire comit lifecycle
-*  Git provides the editor configuration
+*  None of them actually helps with the entire commit lifecycle
+*  Git provides the editor configuration at `core.editor`
 *  A dedicated git editor could achieve awesome things
 
 ## User Experience

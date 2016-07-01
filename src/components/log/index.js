@@ -30,7 +30,7 @@ class Log extends Component {
 
 	render() {
 		if (this.props.toScreen === false) {
-			return null;
+			return <box top="100%" left="100%"/>;
 		}
 		return <log {...this.props}/>;
 	}

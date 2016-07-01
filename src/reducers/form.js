@@ -43,7 +43,11 @@ module.exports = function (state = {}, action) {
 			return state;
 		}
 		default: {
-			return state;
+			const keys = Object.keys(state);
+
+			// Set focus to first empty field or first one if none is focused
+			const focused = state.focused || keys.filter(Boolean)[0] || keys[0];
+			return Object.assign({}, state, {focused});
 		}
 	}
 };

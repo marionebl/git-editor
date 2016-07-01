@@ -12,6 +12,7 @@ const styles = {
 
 class Input extends Component {
 	static propTypes = {
+		focus: PropTypes.bool,
 		placeholder: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 		style: PropTypes.any,
@@ -43,6 +44,13 @@ class Input extends Component {
 		this.handleKeypress = this.handleKeypress.bind(this);
 	}
 
+	componentDidMount() {
+		if (this.props.focus && global.screen) {
+			this.node.focus();
+			global.screen.focusPush(this.node);
+		}
+	}
+
 	saveNode(node) {
 		this.node = node;
 	}
@@ -54,7 +62,7 @@ class Input extends Component {
 			data
 		});
 
-		console.log('blur input', `[name=${this.props.name}]`);
+		console.log('blur input', `[name=${this.props.name}, value=${this.props.value}]`);
 	}
 
 	handleFocus(data) {
@@ -64,7 +72,7 @@ class Input extends Component {
 			data
 		});
 
-		console.log('focus input', `[name=${this.props.name}]`);
+		console.log('focus input', `[name=${this.props.name}, value=${this.props.value}]`);
 	}
 
 	handleKeypress(_, character) {
@@ -78,9 +86,11 @@ class Input extends Component {
 	render() {
 		const {
 			focus,
-			value,
+			value: passed,
 			placeholder
 		} = this.props;
+
+		const value = passed || '';
 
 		return (
 			<box

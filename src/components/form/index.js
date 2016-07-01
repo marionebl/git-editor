@@ -2,6 +2,8 @@ const React = require('react');
 const Component = require('react').Component;
 const PropTypes = require('react').PropTypes;
 const connect = require('react-redux').connect;
+const keys = require('lodash').keys;
+const find = require('lodash').find;
 
 const area = require('../area');
 const Area = area;
@@ -53,11 +55,21 @@ class Form extends Component {
 		form: PropTypes.any
 	};
 
+	nodes = {};
+
 	constructor(props, context) {
 		super(props, context);
 		this.handleBlur = this.handleBlur.bind(this);
 		this.handleFocus = this.handleFocus.bind(this);
 		this.handleKeypress = this.handleKeypress.bind(this);
+		this.saveNode = this.saveNode.bind(this);
+	}
+
+	componentDidMount() {
+		// Autofocus first field
+		console.log('Setting autofocus...');
+		this.nodes.form.focus();
+		this.nodes.form.focusNext();
 	}
 
 	handleBlur(e) {
@@ -85,6 +97,12 @@ class Form extends Component {
 		});
 	}
 
+	saveNode(name) {
+		return ref => {
+			this.nodes[name] = ref;
+		};
+	}
+
 	render() {
 		const {form} = this.props;
 		const {focused} = form;
@@ -93,51 +111,60 @@ class Form extends Component {
 		const scopeOffset = typeOffset + getFieldOffset('scope', form);
 
 		return (
-			<form inputOnFocus="true" keys="true">
-				<FlexBox>
-					<Input
-						name="type"
-						placeholder="type"
-						focus={focused === 'type'}
-						value={form.type}
-						onBlur={this.handleBlur}
-						onFocus={this.handleFocus}
-						onKeypress={this.handleKeypress}
-						/>
-					<text left={typeOffset}>(</text>
-					<Input
-						left={typeOffset + 1}
-						name="scope"
-						placeholder="scope"
-						focus={focused === 'scope'}
-						value={form.scope}
-						onBlur={this.handleBlur}
-						onFocus={this.handleFocus}
-						onKeypress={this.handleKeypress}
-						/>
-					<text left={scopeOffset + 1}>)</text>
-					<text left={scopeOffset + 2}>:</text>
-					<text left={scopeOffset + 3}> </text>
-					<Input
-						left={scopeOffset + 4}
-						name="subject"
-						placeholder="subject"
-						focus={focused === 'subject'}
-						value={form.subject}
-						onBlur={this.handleBlur}
-						onFocus={this.handleFocus}
-						onKeypress={this.handleKeypress}
-						/>
-				</FlexBox>
-				<box top={2}>
-					<Area name="body" placeholder="Body"/>
+			<form ref={this.saveNode('form')} keys>
+				<box>
+					<box>
+						<Input
+							name="type"
+							placeholder="type"
+							focus={focused === 'type'}
+							ref={this.saveNode('type')}
+							value={form.type}
+							onBlur={this.handleBlur}
+							onFocus={this.handleFocus}
+							onKeypress={this.handleKeypress}
+							/>
+						<text left={typeOffset}>(</text>
+						<Input
+							left={typeOffset + 1}
+							name="scope"
+							placeholder="scope"
+							focus={focused === 'scope'}
+							ref={this.saveNode('scope')}
+							value={form.scope}
+							onBlur={this.handleBlur}
+							onFocus={this.handleFocus}
+							onKeypress={this.handleKeypress}
+							/>
+						<text left={scopeOffset + 1}>)</text>
+						<text left={scopeOffset + 2}>:</text>
+						<text left={scopeOffset + 3}> </text>
+						<Input
+							left={scopeOffset + 4}
+							name="subject"
+							placeholder="subject"
+							focus={focused === 'subject'}
+							ref={this.saveNode('subject')}
+							value={form.subject}
+							onBlur={this.handleBlur}
+							onFocus={this.handleFocus}
+							onKeypress={this.handleKeypress}
+							/>
+					</box>
+					{/*<box top={2}>
+						<Area
+							name="body"
+							placeholder="Body"
+							/>
+					</box>
+					<box top={4}>
+						<Area
+							name="footer"
+							placeholder="Footer"
+							/>
+					</box>*/}
 				</box>
-				<box top={4}>
-					<Area name="footer" placeholder="Footer"/>
-				</box>
-				{
-					<Log content="foo"/>
-				}
+				<Log/>
 			</form>
 		);
 	}
@@ -145,6 +172,7 @@ class Form extends Component {
 
 function mapProps(state) {
 	return {
+		environment: state.environment,
 		form: state.form
 	};
 }

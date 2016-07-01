@@ -1,36 +1,64 @@
 #!/usr/bin/env node
 'use strict';
+const meow = require('meow');
+const fs = require('mz/fs');
 
-const editor = './library/git-editor';
 const pkg = require('../package');
+const getGitEditor = require('./library/get-git-editor');
+const setup = require('./library/setup');
 
-function getGitEditor() {
-	if (process.env.NODE_ENV === 'development') {
-		require('babel-register');
-		const live = require('@marionebl/babel-live');
-		return live(require.resolve(editor), {}, pkg.babel);
+const cli = meow(`
+	Usage
+		$ git-editor <file>
+
+	Options
+		-l, --local   Configure git locally to use git-editor
+		-g, --global  Configure git globally to use git-editor
+`, {
+	alias: {
+		l: 'local',
+		g: 'global'
 	}
-	return require('./git-editor');
+});
+
+function read(filePath) {
+	if (filePath) {
+		return fs.readFile(filePath, 'utf-8');
+	}
+	return Promise.resolve('');
 }
 
-function main() {
+function write(filePath, content) {
+	if (filePath) {
+		return fs.writeFile(filePath, content);
+	}
+	console.log(content);
+	return Promise.resolve();
+}
+
+function main(filePath, flags) {
 	return new Promise((resolve, reject) => {
-		try {
-			const gitEditor = getGitEditor();
-			const editor = gitEditor('chore(test): input', {
-				title: pkg.name,
-				environment: process.env.NODE_ENV
-			});
-			editor
-				.then(resolve)
-				.catch(reject);
-		} catch (error) {
-			reject(error);
+		if (flags.local || flags.global) {
+			const location = flags.global ? 'global' : 'local';
+			return setup({location})
+				.then(resolve);
 		}
+
+		const options = {
+			title: pkg.name,
+			environment: process.env.NODE_ENV,
+			debug: Boolean(process.env.NODE_DEBUG)
+		};
+
+		read(filePath)
+			.then(input => getGitEditor(pkg)(input, options))
+			.then(output => write(filePath, output))
+			.then(resolve)
+			.catch(reject);
 	});
 }
 
-main()
+main(cli.input[0], cli.flags)
 	.then(() => {
 		process.exit(0);
 	})
@@ -43,13 +71,11 @@ main()
 		});
 	});
 
-/* process.on('unhandledRejection', error => {
+process.on('unhandledRejection', error => {
 	setTimeout(() => {
-		console.log(Object.keys(error));
 		if (global.screen) {
 			global.screen.destroy();
 		}
-		console.log('!'.repeat(100));
 		throw error;
 	});
-}); */
+});
