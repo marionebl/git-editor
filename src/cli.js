@@ -55,7 +55,7 @@ function live(id) {
 }
 
 const commands = {
-	editor: live('./commands/git-editor'),
+	editor: live('./commands/editor'),
 	setup: live('./commands/setup')
 };
 
