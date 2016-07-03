@@ -4,12 +4,11 @@ import blessed from 'blessed';
 import {merge, omit} from 'lodash';
 import {createStore} from 'redux';
 
-import commit from '../../library/commit';
-import render from '../../library/render-application';
-import repository from '../../library/repository';
-import database from '../../library/database';
-import catchLogs from '../../library/catch-logs';
-
+const commit = require('../../library/commit');
+const render = require('../../library/render-application');
+const repository = require('../../library/repository');
+const database = require('../../library/database');
+const catchLogs = require('../../library/catch-logs');
 const createReducers = require('../../reducers');
 
 function wait(screen, store) {
