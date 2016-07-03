@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 'use strict';
+require('babel-polyfill');
+const path = require('path');
+
+const Promise = require('bluebird');
 const meow = require('meow');
 const fs = require('mz/fs');
+const home = require('home-or-tmp');
+const mkdirp = require('mkdirp-promise');
 
 const pkg = require('../package');
 const getGitEditor = require('./library/get-git-editor');
@@ -36,6 +42,15 @@ function write(filePath, content) {
 	return Promise.resolve();
 }
 
+function prepare(filePath) {
+	const configPath = path.resolve(home, `.${pkg.name}`);
+
+	return Promise.all([
+		read(filePath),
+		mkdirp(configPath).then(() => configPath)
+	]);
+}
+
 function main(filePath, flags) {
 	return new Promise((resolve, reject) => {
 		if (flags.local || flags.global) {
@@ -44,14 +59,13 @@ function main(filePath, flags) {
 				.then(resolve);
 		}
 
-		const options = {
-			title: pkg.name,
-			environment: process.env.NODE_ENV,
-			debug: Boolean(process.env.NODE_DEBUG)
-		};
-
-		read(filePath)
-			.then(input => getGitEditor(pkg)(input, options))
+		prepare(filePath)
+			.spread((input, home) => getGitEditor(pkg)(input, {
+				title: pkg.name,
+				environment: process.env.NODE_ENV,
+				debug: Boolean(process.env.NODE_DEBUG),
+				home: home
+			}))
 			.then(output => write(filePath, output))
 			.then(resolve)
 			.catch(reject);
