@@ -1,5 +1,6 @@
-const React = require('react');
-const Component = require('react').Component;
+import React, {Component, PropTypes} from 'react';
+import pure from 'pure-render-decorator';
+// import autobind from 'autobind-decorator';
 
 const style = {
 	fg: 'grey',
@@ -8,6 +9,7 @@ const style = {
 	}
 };
 
+@pure
 class Area extends Component {
 	render() {
 		const {
@@ -26,4 +28,4 @@ class Area extends Component {
 	}
 }
 
-module.exports = Area;
+export default Area;

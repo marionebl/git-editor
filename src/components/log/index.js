@@ -1,21 +1,18 @@
-const React = require('react');
-const Component = require('react').Component;
-const PropTypes = require('react').PropTypes;
-const pure = require('pure-render-decorator');
-const autobind = require('autobind-decorator');
-const connect = require('react-redux').connect;
+import React, {Component, PropTypes} from 'react';
+import pure from 'pure-render-decorator';
+import autobind from 'autobind-decorator';
 
 @pure
 @autobind
 class Log extends Component {
 	static defaultProps = {
 		content: '',
-		top: '50%',
+		top: '25%',
 		right: '1%',
 		bottom: '1%',
 		left: '1%',
 		width: '99%',
-		height: '50%',
+		height: '75%',
 		border: {
 			type: 'line'
 		},
@@ -39,11 +36,4 @@ class Log extends Component {
 	}
 }
 
-function mapState(state) {
-	return {
-		toScreen: state.environment === 'development',
-		content: state.log.join('\n')
-	};
-}
-
-module.exports = connect(mapState)(Log);
+export default Log;

@@ -1,18 +1,19 @@
 import Promise from 'bluebird';
 
 import blessed from 'blessed';
-import {merge} from 'lodash';
-import {combineReducers, createStore} from 'redux';
+import {merge, omit} from 'lodash';
+import {createStore} from 'redux';
 
 import commit from '../../library/commit';
-import reducers from '../../reducers';
-import renderApplication from '../../library/render-application';
+import render from '../../library/render-application';
 import repository from '../../library/repository';
 import database from '../../library/database';
 import catchLogs from '../../library/catch-logs';
 
+const createReducers = require('../../reducers');
+
 function wait(screen, store) {
-	return new Promise((resolve, reject) => {
+	return new Promise(resolve => {
 		// Let the user kill the application
 		screen.key(['C-c'], () => {
 			screen.destroy();
@@ -46,18 +47,19 @@ async function gitEditor(message, options) {
 	const previous = (await database.get(hash, db)) || {};
 
 	const initial = merge({}, previous, {
+		log: [],
 		environment: options.environment,
 		debug: options.debug,
-		form: filled ? parsed : previous.form
+		form: filled ? parsed : {}
 	});
 
 	// Setup the redux store
-	const combined = combineReducers(reducers);
-	const store = createStore(combined, initial);
+	const reducers = createReducers();
+	const store = createStore(reducers, initial);
 
 	// Persist store changes to leveldb
 	store.subscribe(async () => {
-		const state = store.getState();
+		const state = omit(store.getState(), ['log']);
 		const hash = await repository.hash('HEAD', repo);
 		await database.put(hash, state, db);
 	});
@@ -78,15 +80,17 @@ async function gitEditor(message, options) {
 	catchLogs(screen, store);
 
 	// Render the application
-	renderApplication(screen, store);
+	render(screen, store);
 
 	// Enable hotswapping
 	if (module.hotswap) {
 		module.hotswap.on('hotswap', () => {
 			try {
-				const next = combineReducers(reducers);
+				const next = createReducers();
+				console.log('create!', createReducers.foo);
 				store.replaceReducer(next);
-				renderApplication(screen, store);
+				render(screen, store);
+				console.log('Hot swap successful');
 			} catch (error) {
 				module.hotswap.emit('error', error);
 			}

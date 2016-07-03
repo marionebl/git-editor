@@ -1,5 +1,3 @@
-import {inspect} from 'util';
-
 function catchLogs(screen, store) {
 	const state = store.getState();
 
@@ -10,25 +8,18 @@ function catchLogs(screen, store) {
 		debug: console.debug
 	};
 
-	const method = state.environment === 'production' && state.debug ?
-		function () {
-			const args = Array.prototype.slice.call(arguments);
-			screen.log(args);
-		} :
-		function () {
-			const args = Array.prototype.slice.call(arguments)
-				.map(arg => {
-					if (typeof arg === 'object') {
-						return inspect(arg);
-					}
-					return arg;
-				});
-
+	function method() {
+		const args = Array.prototype.slice.call(arguments);
+		if (state.environment === 'development') {
 			store.dispatch({
 				type: 'LOG_ADD',
 				payload: args.join(' ')
 			});
-		};
+		}
+		if (state.debug) {
+			screen.log(args.join(' '));
+		}
+	}
 
 	console.log = method;
 	console.error = method;

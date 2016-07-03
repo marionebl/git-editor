@@ -1,20 +1,22 @@
-const React = require('react');
-const Component = require('react').Component;
-const PropTypes = require('react').PropTypes;
-const noop = require('lodash').noop;
-const pure = require('pure-render-decorator');
-const autobind = require('autobind-decorator');
+import React, {Component, PropTypes} from 'react';
+import pure from 'pure-render-decorator';
+import autobind from 'autobind-decorator';
+import {noop} from 'lodash';
 
 const styles = {
+	default: {
+		fg: 'white'
+	},
 	placeholder: {
-		fg: 'grey',
-		bg: 'transparent'
+		fg: 'grey'
 	}
 };
 
 @pure
 @autobind
 class Input extends Component {
+	static styles = styles;
+
 	static propTypes = {
 		focus: PropTypes.bool,
 		placeholder: PropTypes.string.isRequired,
@@ -110,7 +112,7 @@ class Input extends Component {
 					onKeypress={this.handleKeypress}
 					ref={this.saveNode}
 					inputOnFocus={false}
-					style={{bg: 'transparent'}}
+					style={styles.default}
 					/>
 				{
 					/* placeholder */
@@ -143,4 +145,4 @@ class Input extends Component {
 	}
 }
 
-module.exports = Input;
+export default Input;

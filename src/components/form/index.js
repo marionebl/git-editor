@@ -1,17 +1,10 @@
-const React = require('react');
-const Component = require('react').Component;
-const PropTypes = require('react').PropTypes;
-const pure = require('pure-render-decorator');
-const autobind = require('autobind-decorator');
+import React, {Component, PropTypes} from 'react';
+import pure from 'pure-render-decorator';
+import autobind from 'autobind-decorator';
 
-const area = require('../area');
-const Area = area;
-
-const input = require('../input');
-const Input = input;
-
-const log = require('../log');
-const Log = log;
+import Area from '../area';
+import Input from '../input';
+import LogContainer from '../../containers/log';
 
 const placeholders = {
 	type: 'type',
@@ -45,6 +38,8 @@ function getFieldOffset(name, form) {
 
 @pure
 class Form extends Component {
+	static placeholders = placeholders;
+
 	static propTypes = {
 		onBlur: PropTypes.func,
 		onFocus: PropTypes.func,
@@ -58,6 +53,7 @@ class Form extends Component {
 	}
 
 	componentDidMount() {
+		// TODO: this should be controlled by state
 		// Autofocus first field
 		console.log('Setting autofocus...');
 		this.nodes.form.focus();
@@ -147,6 +143,12 @@ class Form extends Component {
 							onKeypress={this.handleKeypress}
 							/>
 					</box>
+					<box top={2}>
+						<Area
+							name="body"
+							placeholder="Body"
+							/>
+					</box>
 					{/*<box top={2}>
 						<Area
 							name="body"
@@ -160,10 +162,10 @@ class Form extends Component {
 							/>
 					</box>*/}
 				</box>
-				<Log/>
+				<LogContainer/>
 			</form>
 		);
 	}
 }
 
-module.exports = Form;
+export default Form;

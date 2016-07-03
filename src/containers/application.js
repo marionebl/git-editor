@@ -1,9 +1,7 @@
-const React = require('react');
-const Component = require('react').Component;
-const connect = require('react-redux').connect;
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
 
-const form = require('../components/form');
-const Form = form;
+import Form from '../components/form';
 
 class Application extends Component {
 	render() {
@@ -26,4 +24,6 @@ function mapDispatch(dispatch) {
 	};
 }
 
-export default connect(mapProps, mapDispatch)(Application);
+const connectedApplication = connect(mapProps, mapDispatch)(Application);
+
+export default connectedApplication;
