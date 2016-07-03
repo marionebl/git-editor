@@ -7,4 +7,4 @@ function logReducer(state = [], action) {
 	}
 }
 
-module.exports = logReducer;
+export default logReducer;

@@ -1,4 +1,4 @@
-const inspect = require('util').inspect;
+import {inspect} from 'util';
 
 function catchLogs(screen, store) {
 	const state = store.getState();

@@ -1,15 +1,21 @@
-const combineReducers = require('redux').combineReducers;
+import debug from './debug';
+import environment from './environment';
+import form from './form';
+import log from './log';
+import validate from './validate';
 
-const debug = require('./debug');
-const environment = require('./environment');
-const form = require('./form');
-const log = require('./log');
-const validate = require('./validate');
-
-module.exports = combineReducers({
+export {
 	debug,
 	environment,
 	form,
 	log,
 	validate
-});
+};
+
+export default {
+	debug,
+	environment,
+	form,
+	log,
+	validate
+};

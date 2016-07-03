@@ -8,10 +8,7 @@ const meow = require('meow');
 const fs = require('mz/fs');
 const home = require('home-or-tmp');
 const mkdirp = require('mkdirp-promise');
-
 const pkg = require('../package');
-const getGitEditor = require('./library/get-git-editor');
-const setup = require('./library/setup');
 
 const cli = meow(`
 	Usage
@@ -38,7 +35,6 @@ function write(filePath, content) {
 	if (filePath) {
 		return fs.writeFile(filePath, content);
 	}
-	console.log(content);
 	return Promise.resolve();
 }
 
@@ -51,16 +47,28 @@ function prepare(filePath) {
 	]);
 }
 
+function live(id) {
+	if (process.env.NODE_ENV === 'development') {
+		return require(id + '/live'); // eslint-disable-line
+	}
+	return require(id);
+}
+
+const commands = {
+	editor: live('./commands/git-editor'),
+	setup: live('./commands/setup')
+};
+
 function main(filePath, flags) {
 	return new Promise((resolve, reject) => {
 		if (flags.local || flags.global) {
 			const location = flags.global ? 'global' : 'local';
-			return setup({location})
+			return commands.setup({location})
 				.then(resolve);
 		}
 
 		prepare(filePath)
-			.spread((input, home) => getGitEditor(pkg)(input, {
+			.spread((input, home) => commands.editor(pkg)(input, {
 				title: pkg.name,
 				environment: process.env.NODE_ENV,
 				debug: Boolean(process.env.NODE_DEBUG),

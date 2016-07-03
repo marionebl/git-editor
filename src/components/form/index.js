@@ -1,7 +1,6 @@
 const React = require('react');
 const Component = require('react').Component;
 const PropTypes = require('react').PropTypes;
-const connect = require('react-redux').connect;
 const pure = require('pure-render-decorator');
 const autobind = require('autobind-decorator');
 
@@ -10,9 +9,6 @@ const Area = area;
 
 const input = require('../input');
 const Input = input;
-
-const flexbox = require('../line');
-const FlexBox = flexbox;
 
 const log = require('../log');
 const Log = log;
@@ -170,19 +166,4 @@ class Form extends Component {
 	}
 }
 
-function mapProps(state) {
-	return {
-		environment: state.environment,
-		form: state.form
-	};
-}
-
-function mapDispatch(dispatch) {
-	return {
-		onBlur: dispatch,
-		onFocus: dispatch,
-		onKeypress: dispatch
-	};
-}
-
-module.exports = connect(mapProps, mapDispatch)(Form);
+module.exports = Form;

@@ -1,14 +1,13 @@
-const React = require('react');
-const render = require('react-blessed').render;
+import React from 'react';
+import {render} from 'react-blessed';
+import {Provider} from 'react-redux';
 
-const Provider = require('react-redux').Provider;
-const Form = require('../components/form');
-const FormElement = Form;
+import Application from '../containers/application';
 
 function renderApplication(screen, store) {
 	return render(
 		<Provider store={store}>
-			<FormElement/>
+			<Application/>
 		</Provider>,
 		screen
 	);

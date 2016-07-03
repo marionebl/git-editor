@@ -1,20 +1,12 @@
-const path = require('path');
-const git = require('git-fs-repo');
+import create from './create';
+import hash from './hash';
 
-export function create(basePath = process.cwd()) {
-  return new Promise((resolve, reject) => {
-		const directory = path.resolve(basePath, '.git');
+export {
+	create,
+	hash
+};
 
-		git(directory, function(error, repository) {
-			if (error) {
-				return reject(error);
-			}
-			resolve(repository);
-		});
-	});
-}
-
-export async function hash(ref, repository) {
-	const repo = await repository;
-  return (repo.ref(ref) || {}).hash;
-}
+export default {
+	create,
+	hash
+};

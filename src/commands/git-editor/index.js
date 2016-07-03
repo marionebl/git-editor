@@ -1,15 +1,15 @@
-const Promise = require('bluebird');
+import Promise from 'bluebird';
 
-const blessed = require('blessed');
-const merge = require('lodash').merge;
-const createStore = require('redux').createStore;
+import blessed from 'blessed';
+import {merge} from 'lodash';
+import {combineReducers, createStore} from 'redux';
 
-const commit = require('./commit');
-const catchLogs = require('./catch-logs');
-const reducers = require('../reducers');
-const renderApplication = require('./render-application');
-const repository = require('./repository');
-const database = require('./database');
+import commit from '../../library/commit';
+import reducers from '../../reducers';
+import renderApplication from '../../library/render-application';
+import repository from '../../library/repository';
+import database from '../../library/database';
+import catchLogs from '../../library/catch-logs';
 
 function wait(screen, store) {
 	return new Promise((resolve, reject) => {
@@ -36,7 +36,7 @@ function wait(screen, store) {
 
 async function gitEditor(message, options) {
 	const parsed = message ? commit.parse(message) : {};
-	const headerFilled = parsed.header && parsed.header[0] !== '#';
+	const filled = message.split('\n')[0].length > 0;
 
 	const db = await database.create(options.home);
 	const repo = await repository.create();
@@ -48,11 +48,12 @@ async function gitEditor(message, options) {
 	const initial = merge({}, previous, {
 		environment: options.environment,
 		debug: options.debug,
-		form: headerFilled ? parsed : previous.form
+		form: filled ? parsed : previous.form
 	});
 
 	// Setup the redux store
-	const store = createStore(reducers, initial);
+	const combined = combineReducers(reducers);
+	const store = createStore(combined, initial);
 
 	// Persist store changes to leveldb
 	store.subscribe(async () => {
@@ -83,6 +84,8 @@ async function gitEditor(message, options) {
 	if (module.hotswap) {
 		module.hotswap.on('hotswap', () => {
 			try {
+				const next = combineReducers(reducers);
+				store.replaceReducer(next);
 				renderApplication(screen, store);
 			} catch (error) {
 				module.hotswap.emit('error', error);
@@ -104,4 +107,4 @@ async function gitEditor(message, options) {
 	return await waiting;
 }
 
-module.exports = gitEditor;
+export default gitEditor;

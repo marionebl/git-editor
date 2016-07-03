@@ -9,12 +9,11 @@ const commands = [
 	'left'
 ];
 
-module.exports = function (state = {}, action) {
+export default function (state = {}, action) {
 	switch (action.type) {
 		case 'keypress': {
 			const {data, name} = action.payload;
 
-			// process.stdout.write(JSON.stringify(data) + '\n');
 			if (commands.includes(data.name)) {
 				return state;
 			}
@@ -23,10 +22,13 @@ module.exports = function (state = {}, action) {
 
 			const newValue = data.full === 'backspace' ?
 				oldValue.slice(0, oldValue.length - 1) :
-				`${oldValue}${data.sequence || ''}`;
+				`${oldValue}${data.ch || data.sequence || ''}`;
 
-			if (oldValue !== newValue) {
-				return Object.assign({}, state, {[name]: newValue});
+			// strip control characters
+			const sanitized = newValue.replace(/[\x00-\x1F\x7F-\x9F]/ug, '');
+
+			if (oldValue !== sanitized) {
+				return Object.assign({}, state, {[name]: sanitized});
 			}
 			return state;
 		}
@@ -46,8 +48,11 @@ module.exports = function (state = {}, action) {
 			const keys = Object.keys(state);
 
 			// Set focus to first empty field or first one if none is focused
-			const focused = state.focused || keys.filter(Boolean)[0] || keys[0];
+			const focused = state.focused ||
+				keys.filter(Boolean)[0] ||
+				keys[0];
+
 			return Object.assign({}, state, {focused});
 		}
 	}
-};
+}
