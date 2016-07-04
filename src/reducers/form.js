@@ -52,7 +52,7 @@ export default function (state = {}, action) {
 				keys.filter(Boolean)[0] ||
 				keys[0];
 
-			return Object.assign({}, {state}, {focused});
+			return Object.assign({}, state, {focused});
 		}
 	}
 }

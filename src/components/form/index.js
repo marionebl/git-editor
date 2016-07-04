@@ -101,6 +101,8 @@ class Form extends Component {
 
 		const typeOffset = getFieldOffset('type', form);
 		const scopeOffset = typeOffset + getFieldOffset('scope', form);
+		const bodyOffset = Math.max(1, (form.body || '').split('\n').length);
+		console.log(JSON.stringify(form));
 
 		return (
 			<form ref={this.saveNode('form')} keys>
@@ -145,24 +147,19 @@ class Form extends Component {
 					</box>
 					<box top={2}>
 						<Area
+							top={0}
 							name="body"
 							placeholder="Body"
+							focus={focused === 'body'}
+							ref={this.saveNode('body')}
+							value={form.body}
+							onBlur={this.handleBlur}
+							onFocus={this.handleFocus}
+							onKeypress={this.handleKeypress}
 							/>
 					</box>
-					{/*<box top={2}>
-						<Area
-							name="body"
-							placeholder="Body"
-							/>
-					</box>
-					<box top={4}>
-						<Area
-							name="footer"
-							placeholder="Footer"
-							/>
-					</box>*/}
 				</box>
-				<LogContainer/>
+				{/*<LogContainer/>*/}
 			</form>
 		);
 	}

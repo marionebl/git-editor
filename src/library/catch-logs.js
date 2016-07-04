@@ -10,15 +10,7 @@ function catchLogs(screen, store) {
 
 	function method() {
 		const args = Array.prototype.slice.call(arguments);
-		if (state.environment === 'development') {
-			store.dispatch({
-				type: 'LOG_ADD',
-				payload: args.join(' ')
-			});
-		}
-		if (state.debug) {
-			screen.log(args.join(' '));
-		}
+		screen.log(args.join(' '));
 	}
 
 	console.log = method;
