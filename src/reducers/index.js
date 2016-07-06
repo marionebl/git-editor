@@ -17,7 +17,6 @@ export function createReducers(amend = {}) {
 	};
 
 	const toCombine = merge({}, reducers, amend);
-	// console.log(toCombine.log);
 	return combineReducers(toCombine);
 }
 

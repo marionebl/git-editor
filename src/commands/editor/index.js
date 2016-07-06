@@ -86,7 +86,6 @@ async function gitEditor(message, options) {
 		module.hotswap.on('hotswap', () => {
 			try {
 				const next = createReducers();
-				console.log('create!', createReducers.foo);
 				store.replaceReducer(next);
 				render(screen, store);
 				console.log('Hot swap successful');

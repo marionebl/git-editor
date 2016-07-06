@@ -22,7 +22,7 @@
     ],
     "plugins": [
       "transform-decorators-legacy",
-			"add-module-exports"
+      "add-module-exports"
     ]
   },
   "eslintConfig": {
@@ -51,6 +51,7 @@
     "common-tags": "^1.3.0",
     "conventional-commits-parser": "^1.2.2",
     "css-layout": "^1.1.1",
+    "editor-widget": "github:dbkaplun/editor-widget#react-blessed",
     "git-fs-repo": "^2.0.0",
     "gitconfig": "^2.0.0",
     "glob": "^7.0.5",
@@ -59,10 +60,11 @@
     "level": "^1.4.0",
     "lodash": "^4.13.1",
     "meow": "^3.7.0",
+    "mkdirp": "^0.5.1",
     "mkdirp-promise": "^2.0.0",
     "mz": "^2.4.0",
     "pure-render-decorator": "^1.1.1",
-    "react": "^0.14.8",
+    "react": "0.14.5",
     "react-blessed": "^0.1.7",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2"

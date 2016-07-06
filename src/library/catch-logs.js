@@ -1,6 +1,6 @@
-function catchLogs(screen, store) {
-	const state = store.getState();
+import {inspect} from 'util';
 
+function catchLogs(screen, store) {
 	const natives = {
 		log: console.log,
 		error: console.error,
@@ -8,9 +8,16 @@ function catchLogs(screen, store) {
 		debug: console.debug
 	};
 
-	function method() {
-		const args = Array.prototype.slice.call(arguments);
-		screen.log(args.join(' '));
+	function method(...args) {
+		const chunks = args.map(arg => {
+			if (typeof arg === 'object') {
+				return inspect(arg, {
+					colors: true
+				});
+			}
+			return arg;
+		});
+		screen.log(`[${Date.now()}]`, chunks.join(' '));
 	}
 
 	console.log = method;

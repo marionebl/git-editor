@@ -6,11 +6,21 @@ import Area from '../area';
 import Input from '../input';
 import LogContainer from '../../containers/log';
 
+const types = {
+	box: 'AREA',
+	default: 'INPUT',
+	textbox: 'INPUT'
+};
+
 const placeholders = {
 	type: 'type',
 	scope: 'scope',
 	subject: 'subject'
 };
+
+function getType(token) {
+	return types[token] || types.default;
+}
 
 function getMaxLength() {
 	return Array.prototype.slice.call(arguments)
@@ -53,8 +63,7 @@ class Form extends Component {
 	}
 
 	componentDidMount() {
-		// TODO: this should be controlled by state
-		// Autofocus first field
+		// TODO: Send this to store and maintain a focusIndex instead
 		console.log('Setting autofocus...');
 		this.nodes.form.focus();
 		this.nodes.form.focusNext();
@@ -62,30 +71,46 @@ class Form extends Component {
 
 	@autobind
 	handleBlur(e) {
+		const type = getType(e.target.type);
 		this.props.onBlur({
-			type: 'blur',
+			type: `${type}_BLUR`,
 			payload: e.props.name
 		});
 	}
 
 	@autobind
 	handleFocus(e) {
+		const type = getType(e.target.type);
 		this.props.onFocus({
-			type: 'focus',
+			type: `${type}_FOCUS`,
 			payload: e.props.name
 		});
 	}
 
 	@autobind
 	handleKeypress(e) {
+		const type = getType(e.target.type);
 		this.props.onKeypress({
-			type: 'keypress',
+			type: `${type}_KEYPRESS`,
 			payload: {
 				name: e.props.name,
 				data: e.data,
-				focused: e.target.focused
+				focused: e.target.focused,
+				value: e.value
 			}
 		});
+	}
+
+	@autobind
+	handleNavigation(e) {
+		const {direction} = e.data;
+		// TODO: Send this to store and maintain a focusIndex instead
+		if (direction === 'next') {
+			this.nodes.form.focusNext();
+		}
+		if (direction === 'previous') {
+			this.nodes.form.focusPrevious();
+		}
 	}
 
 	@autobind
@@ -102,7 +127,7 @@ class Form extends Component {
 		const typeOffset = getFieldOffset('type', form);
 		const scopeOffset = typeOffset + getFieldOffset('scope', form);
 		const bodyOffset = Math.max(1, (form.body || '').split('\n').length);
-		console.log(JSON.stringify(form));
+		// console.log(JSON.stringify(form));
 
 		return (
 			<form ref={this.saveNode('form')} keys>
@@ -156,7 +181,20 @@ class Form extends Component {
 							onBlur={this.handleBlur}
 							onFocus={this.handleFocus}
 							onKeypress={this.handleKeypress}
+							onNavigation={this.handleNavigation}
 							/>
+							{/* }<Area
+								top={bodyOffset + 1}
+								name="body"
+								placeholder="Foooo"
+								focus={focused === 'body'}
+								ref={this.saveNode('body')}
+								value={form.body}
+								onBlur={this.handleBlur}
+								onFocus={this.handleFocus}
+								onKeypress={this.handleKeypress}
+								onNavigation={this.handleNavigation}
+								/> */}
 					</box>
 				</box>
 				{/*<LogContainer/>*/}
