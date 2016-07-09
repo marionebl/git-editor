@@ -183,6 +183,10 @@ class Area extends Component {
 		}
 	} */
 
+	handleFocus() {
+		console.log(arguments);
+	}
+
 	render() {
 		const {
 			placeholder,
@@ -192,15 +196,24 @@ class Area extends Component {
 
 		const editor = {
 			gutter: {
-				hidden: true
+				visible: false,
+				width: 3,
+				style: {
+					fg: 'grey',
+					bg: 'transparent'
+				},
+				activeStyle: {
+					fg: 'white',
+					bg: 'transparent'
+				}
 			}
 		};
 
 		return (
-			<box top={this.props.top}>
-				<Editor {...editor}/>
+			<box top={this.props.top} onFocus={this.handleFocus}>
+				<Editor {...editor}>{value}</Editor>
 				{
-					/* placeholder */
+					/* placeholder
 					placeholder && value.length === 0 ?
 						<box
 							top={0}
@@ -209,7 +222,7 @@ class Area extends Component {
 							keyable={false}
 							>
 							{placeholder}
-						</box> :
+						</box>  : */
 						null
 				}
 			</box>

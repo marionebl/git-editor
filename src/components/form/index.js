@@ -177,7 +177,7 @@ class Form extends Component {
 							placeholder="Body"
 							focus={focused === 'body'}
 							ref={this.saveNode('body')}
-							value={form.body}
+							value="function() { console.log('!'); }"
 							onBlur={this.handleBlur}
 							onFocus={this.handleFocus}
 							onKeypress={this.handleKeypress}

@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "start": "NODE_ENV=development node src/cli.js",
+    "debug": "NODE_ENV=development node --inspect=1337 src/cli.js",
     "build": "npm run compile",
     "compile": "babel src -d dist",
     "test": "xo"
