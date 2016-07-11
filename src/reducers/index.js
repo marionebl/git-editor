@@ -1,4 +1,3 @@
-import {combineReducers} from 'redux';
 import {merge} from 'lodash';
 
 import debug from './debug';
@@ -16,8 +15,7 @@ export function createReducers(amend = {}) {
 		validate
 	};
 
-	const toCombine = merge({}, reducers, amend);
-	return combineReducers(toCombine);
+	return merge({}, reducers, amend);
 }
 
 module.exports = createReducers;

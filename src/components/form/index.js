@@ -2,25 +2,14 @@ import React, {Component, PropTypes} from 'react';
 import pure from 'pure-render-decorator';
 import autobind from 'autobind-decorator';
 
-import Area from '../area';
 import Input from '../input';
-import LogContainer from '../../containers/log';
-
-const types = {
-	box: 'AREA',
-	default: 'INPUT',
-	textbox: 'INPUT'
-};
+import Area from '../area';
 
 const placeholders = {
 	type: 'type',
 	scope: 'scope',
 	subject: 'subject'
 };
-
-function getType(token) {
-	return types[token] || types.default;
-}
 
 function getMaxLength() {
 	return Array.prototype.slice.call(arguments)
@@ -71,27 +60,24 @@ class Form extends Component {
 
 	@autobind
 	handleBlur(e) {
-		const type = getType(e.target.type);
 		this.props.onBlur({
-			type: `${type}_BLUR`,
+			type: `INPUT_BLUR`,
 			payload: e.props.name
 		});
 	}
 
 	@autobind
 	handleFocus(e) {
-		const type = getType(e.target.type);
 		this.props.onFocus({
-			type: `${type}_FOCUS`,
+			type: `INPUT_FOCUS`,
 			payload: e.props.name
 		});
 	}
 
 	@autobind
 	handleKeypress(e) {
-		const type = getType(e.target.type);
 		this.props.onKeypress({
-			type: `${type}_KEYPRESS`,
+			type: `INPUT_KEYPRESS`,
 			payload: {
 				name: e.props.name,
 				data: e.data,
@@ -126,8 +112,8 @@ class Form extends Component {
 
 		const typeOffset = getFieldOffset('type', form);
 		const scopeOffset = typeOffset + getFieldOffset('scope', form);
-		const bodyOffset = Math.max(1, (form.body || '').split('\n').length);
-		// console.log(JSON.stringify(form));
+		const bodyHeight = Math.max(0, (form.body || '').split('\n').length);
+		const bodyOffset = bodyHeight > 0 ? bodyHeight + 1 : 0;
 
 		return (
 			<form ref={this.saveNode('form')} keys>
@@ -175,29 +161,14 @@ class Form extends Component {
 							top={0}
 							name="body"
 							placeholder="Body"
-							focus={focused === 'body'}
-							ref={this.saveNode('body')}
-							value="function() { console.log('!'); }"
-							onBlur={this.handleBlur}
-							onFocus={this.handleFocus}
-							onKeypress={this.handleKeypress}
-							onNavigation={this.handleNavigation}
 							/>
-							{/* }<Area
-								top={bodyOffset + 1}
-								name="body"
-								placeholder="Foooo"
-								focus={focused === 'body'}
-								ref={this.saveNode('body')}
-								value={form.body}
-								onBlur={this.handleBlur}
-								onFocus={this.handleFocus}
-								onKeypress={this.handleKeypress}
-								onNavigation={this.handleNavigation}
-								/> */}
+						<Area
+							top={bodyOffset}
+							name="footer"
+							placeholder="Footer"
+							/>
 					</box>
 				</box>
-				{/*<LogContainer/>*/}
 			</form>
 		);
 	}

@@ -64,8 +64,6 @@ class Input extends Component {
 			props: this.props,
 			data
 		});
-
-		console.log('blur input', `[name=${this.props.name}, value=${this.props.value}]`);
 	}
 
 	handleFocus(data) {
@@ -74,8 +72,6 @@ class Input extends Component {
 			props: this.props,
 			data
 		});
-
-		console.log('focus input', `[name=${this.props.name}, value=${this.props.value}]`);
 	}
 
 	handleKeypress(_, character) {

@@ -51,7 +51,7 @@ function live(id) {
 	if (process.env.NODE_ENV === 'development') {
 		return require(id + '/live'); // eslint-disable-line
 	}
-	return require(id);
+	return () => require(id);
 }
 
 const commands = {

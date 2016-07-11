@@ -2,8 +2,9 @@ import Promise from 'bluebird';
 
 import blessed from 'blessed';
 import {merge, omit} from 'lodash';
-import {createStore} from 'redux';
+import {combineReducers} from 'redux';
 
+const createStore = require('../../library/store');
 const commit = require('../../library/commit');
 const render = require('../../library/render-application');
 const repository = require('../../library/repository');
@@ -85,7 +86,8 @@ async function gitEditor(message, options) {
 	if (module.hotswap) {
 		module.hotswap.on('hotswap', () => {
 			try {
-				const next = createReducers();
+				const nextReducers = createReducers();
+				const next = combineReducers(nextReducers);
 				store.replaceReducer(next);
 				render(screen, store);
 				console.log('Hot swap successful');
