@@ -5,6 +5,9 @@ import autobind from 'autobind-decorator';
 import {Editor} from 'react-blessed-editor';
 import {noop} from 'lodash';
 
+import Focusable from '../focusable';
+import Placeholder from '../placeholder';
+
 const styles = {
 	default: {
 		fg: 'white'
@@ -29,6 +32,7 @@ class Area extends Component {
 
 	static propTypes = {
 		top: t.number,
+		left: t.number,
 		value: t.string,
 		placeholder: t.string,
 		focus: t.bool,
@@ -39,48 +43,52 @@ class Area extends Component {
 		})
 	};
 
-	handleBlur(data) {
-		this.props.onBlur({
-			props: this.props,
-			data
-		});
+	nodes = {};
+
+	handleBlur({target}) {
+		const {props} = this;
+		props.onBlur({target, props});
 	}
 
-	handleFocus(data) {
-		this.props.onFocus({
-			props: this.props,
-			data
-		});
+	handleFocus({target}) {
+		const {props} = this;
+		props.onFocus({target, props});
 	}
 
 	render() {
 		const {
 			top,
+			left,
 			placeholder,
-			focus
+			value,
+			focus,
+			...other
 		} = this.props;
 
 		return (
 			<box
 				top={top}
+				left={left}
 				>
-				<Editor
-					onBlur={this.handleBlur}
+				<Focusable
+					{...other}
+					content={value}
+					focus={focus}
+					component={Editor}
 					onFocus={this.handleFocus}
-					keyable
+					onBlur={this.handleBlur}
 					/>
-				{
-					/* placeholder */
-					placeholder && !focus &&
-						<box
-							top={0}
-							style={styles.placeholder}
-							input={false}
-							keyable={false}
-							>
-							{placeholder}
-						</box>
-				}
+					{/* placeholder */}
+					{
+						placeholder && value.length === 0 ?
+							<Placeholder
+								focus={focus}
+								style={styles.placeholder}
+								>
+								{placeholder}
+							</Placeholder> :
+							null
+					}
 			</box>
 		);
 	}

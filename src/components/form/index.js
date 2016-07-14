@@ -43,7 +43,9 @@ class Form extends Component {
 		onBlur: PropTypes.func,
 		onFocus: PropTypes.func,
 		onKeypress: PropTypes.func,
-		form: PropTypes.any
+		form: PropTypes.any,
+		body: PropTypes.any,
+		footer: PropTypes.any
 	};
 
 	constructor(props, context) {
@@ -52,10 +54,7 @@ class Form extends Component {
 	}
 
 	componentDidMount() {
-		// TODO: Send this to store and maintain a focusIndex instead
-		console.log('Setting autofocus...');
-		this.nodes.form.focus();
-		this.nodes.form.focusNext();
+
 	}
 
 	@autobind
@@ -68,6 +67,7 @@ class Form extends Component {
 
 	@autobind
 	handleFocus(e) {
+		// console.log(e.props.name);
 		this.props.onFocus({
 			type: `INPUT_FOCUS`,
 			payload: e.props.name
@@ -107,7 +107,7 @@ class Form extends Component {
 	}
 
 	render() {
-		const {form} = this.props;
+		const {form, body, footer} = this.props;
 		const {focused} = form;
 
 		const typeOffset = getFieldOffset('type', form);
@@ -156,16 +156,26 @@ class Form extends Component {
 							onKeypress={this.handleKeypress}
 							/>
 					</box>
-					<box top={2}>
+					<box top={2} left={0}>
 						<Area
+							{...body}
+							value={body.children}
 							top={0}
 							name="body"
 							placeholder="Body"
+							focus={focused === 'body'}
+							onBlur={this.handleBlur}
+							onFocus={this.handleFocus}
 							/>
 						<Area
+							{...footer}
+							value={footer.children}
 							top={bodyOffset}
 							name="footer"
 							placeholder="Footer"
+							focus={focused === 'footer'}
+							onBlur={this.handleBlur}
+							onFocus={this.handleFocus}
 							/>
 					</box>
 				</box>

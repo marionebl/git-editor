@@ -12,7 +12,8 @@ function catchLogs(screen, store) {
 		const chunks = args.map(arg => {
 			if (typeof arg === 'object') {
 				return inspect(arg, {
-					colors: true
+					colors: true,
+					depth: null
 				});
 			}
 			return arg;

@@ -3,6 +3,9 @@ import pure from 'pure-render-decorator';
 import autobind from 'autobind-decorator';
 import {noop} from 'lodash';
 
+import Focusable from '../focusable';
+import Placeholder from '../placeholder';
+
 const styles = {
 	default: {
 		fg: 'white'
@@ -34,98 +37,59 @@ class Input extends Component {
 		onKeypress: noop,
 		value: '',
 		placeholder: '',
-		style: {
-			bg: 'transparent',
-			focus: {
-				bg: 'red'
-			}
-		}
+		style: {}
 	};
 
-	constructor(props, context) {
-		super(props, context);
-		this.nodes = {};
+	saveNode(ref) {
+		this.node = ref.node || ref;
 	}
 
-	componentDidMount() {
-		if (this.props.focus && global.screen) {
-			this.node.focus();
-			global.screen.focusPush(this.node);
-		}
-	}
-
-	saveNode(node) {
-		this.node = node;
-	}
-
-	handleBlur(data) {
-		this.props.onBlur({
-			target: this.node,
-			props: this.props,
-			data
-		});
-	}
-
-	handleFocus(data) {
-		this.props.onFocus({
-			target: this.node,
-			props: this.props,
-			data
-		});
-	}
-
-	handleKeypress(_, character) {
-		this.props.onKeypress({
-			target: this.node,
-			props: this.props,
-			data: character
-		});
+	handleKeypress(_, data) {
+		const {props, node: target} = this;
+		props.onKeypress({target, props, data});
 	}
 
 	render() {
 		const {
 			focus,
 			value: passed,
-			placeholder
+			placeholder,
+			...other
 		} = this.props;
 
 		const value = passed || '';
 
 		return (
 			<box
-				{...this.props}
+				{...other}
 				input={false}
 				keyable={false}
 				>
 				{/* actual textual input */}
-				<textbox
-					value={value}
-					{...this.props}
-					top={0}
+				<Focusable
+					style={styles.default}
+					{...other}
 					left={0}
-					onBlur={this.handleBlur}
-					onFocus={this.handleFocus}
+					top={0}
+					component="textbox"
+					inputOnFocus={false}
 					onKeypress={this.handleKeypress}
 					ref={this.saveNode}
-					inputOnFocus={false}
-					style={styles.default}
+					value={value}
 					/>
+				{/* placeholder */}
 				{
-					/* placeholder */
 					placeholder && value.length === 0 ?
-						<box
+						<Placeholder
+							focus={false}
 							style={styles.placeholder}
-							input={false}
-							keyable={false}
-							top={0}
-							left={0}
 							>
 							{placeholder}
-						</box> :
+						</Placeholder> :
 						null
 				}
+				{/* cursor */}
 				{
-					/* cursor */
 					focus ?
 						<box
 							content={value ? ' ' : placeholder[0]}

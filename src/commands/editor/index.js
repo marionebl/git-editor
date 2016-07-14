@@ -45,12 +45,21 @@ async function gitEditor(message, options) {
 
 	// Try to obtain last state for git hash
 	const previous = (await database.get(hash, db)) || {};
+	const form = filled ? parsed : {};
 
 	const initial = merge({}, previous, {
 		log: [],
 		environment: options.environment,
 		debug: options.debug,
-		form: filled ? parsed : {}
+		form,
+		body: {
+			contents: form.body,
+			cursor: {x: 0, y: 0}
+		},
+		footer: {
+			contents: form.footer,
+			cursor: {x: 0, y: 0}
+		}
 	});
 
 	// Setup the redux store

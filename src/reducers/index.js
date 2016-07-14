@@ -1,4 +1,5 @@
 import {merge} from 'lodash';
+import {createEditorReducers} from 'react-blessed-editor';
 
 import debug from './debug';
 import environment from './environment';
@@ -12,7 +13,9 @@ export function createReducers(amend = {}) {
 		environment,
 		form,
 		log,
-		validate
+		validate,
+		...createEditorReducers('body'),
+		...createEditorReducers('footer')
 	};
 
 	return merge({}, reducers, amend);
