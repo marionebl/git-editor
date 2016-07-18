@@ -1,4 +1,5 @@
 import navigate from './navigate';
+import navigateLine from './navigate-line';
 
 const space = [
 	['type', 'scope', 'subject'],
@@ -15,6 +16,14 @@ export function focusReducer(state = '', action) {
 		case 'FORM_NAVIGATE_BACKWARD': {
 			const {payload: {length}} = action;
 			return navigate(state, length * -1, space);
+		}
+		case 'FORM_NAVIGATE_DOWN': {
+			const {payload: {length}} = action;
+			return navigateLine(state, length, space);
+		}
+		case 'FORM_NAVIGATE_UP': {
+			const {payload: {length}} = action;
+			return navigateLine(state, length * -1, space);
 		}
 		default:
 			return state;

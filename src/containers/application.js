@@ -54,6 +54,22 @@ function mapDispatch(dispatch) {
 				}
 			});
 		},
+		onNavigateUp() {
+			dispatch({
+				type: 'FORM_NAVIGATE_UP',
+				payload: {
+					length: 1
+				}
+			});
+		},
+		onNavigateDown() {
+			dispatch({
+				type: 'FORM_NAVIGATE_DOWN',
+				payload: {
+					length: 1
+				}
+			});
+		},
 		...createEditorMapDispatch('body')(dispatch),
 		...createEditorMapDispatch('footer')(dispatch)
 	};

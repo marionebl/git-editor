@@ -48,6 +48,8 @@ class Form extends Component {
 		onNavigateBackward: t.func,
 		onNavigateForwardInfinity: t.func,
 		onNavigateBackwardInfinity: t.func,
+		onNavigateUp: t.func,
+		onNavigateDown: t.func,
 		form: t.any,
 		focused: t.string,
 		body: t.any,
@@ -58,20 +60,21 @@ class Form extends Component {
 		onNavigateForward: noop,
 		onNavigateForwardInfinity: noop,
 		onNavigateBackward: noop,
-		onNavigateBackwardInfinity: noop
+		onNavigateBackwardInfinity: noop,
+		onNavigateUp: noop,
+		onNavigateDown: noop
 	};
 
-	constructor(props, context) {
-		super(props, context);
-		this.nodes = {};
-	}
+	nodes = {};
+	attached = false;
 
 	componentDidMount() {
 		const {form} = this.nodes;
-		if (form) {
-			const {screen} = form;
 
+		if (form && !this.attached) {
+			const {screen} = form;
 			screen.on('keypress', this.handleScreenKeyPress);
+			this.attached = true;
 		}
 	}
 
@@ -87,43 +90,35 @@ class Form extends Component {
 		this.props.onNavigateForward();
 	}
 
-	handleNavigateForwardInfinity() {
-		this.props.onNavigateForwardInfinity();
-	}
-
 	handleNavigateBackward() {
 		this.props.onNavigateBackward();
 	}
 
-	handleNavigateBackwardInfinity() {
-		this.props.onNavigateBackwardInfinity();
-	}
-
 	handleNavigateUp() {
-		
+		this.props.onNavigateUp();
 	}
 
 	handleNavigateDown() {
-		
+		this.props.onNavigateDown();
 	}
 
 	handleScreenKeyPress(data, character) {
+		const {props} = this;
+
+		if (['body', 'footer'].includes(props.focused)) {
+			return;
+		}
+
 		switch (character.full) {
 			case 'tab':
 			case 'right':
 			case 'C-right':
 				this.handleNavigateForward();
 				break;
-			case 'C-a':
-				this.handleNavigateForwardInfinity();
-				break;
 			case 'S-tab':
 			case 'left':
 			case 'C-left':
 				this.handleNavigateBackward();
-				break;
-			case 'C-e':
-				this.handleNavigateBackwardInfinity();
 				break;
 			case 'up':
 				this.handleNavigateUp();
@@ -134,36 +129,6 @@ class Form extends Component {
 			default:
 				break;
 		}
-	}
-
-	handleBlur(e) {
-		/* this.props.onBlur({
-			type: `INPUT_BLUR`,
-			payload: e.props.name
-		}); */
-	}
-
-	handleFocus(e) {
-		/* this.props.onFocus({
-			type: `INPUT_FOCUS`,
-			payload: e.props.name
-		}); */
-	}
-
-	handleKeypress(e) {
-		/* this.props.onKeypress({
-			type: `INPUT_KEYPRESS`,
-			payload: {
-				name: e.props.name,
-				data: e.data,
-				focused: e.target.focused,
-				value: e.value
-			}
-		}); */
-	}
-
-	handleNavigation() {
-
 	}
 
 	saveNode(name) {
