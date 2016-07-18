@@ -27,6 +27,7 @@ function mapProps(state) {
 	return {
 		environment: state.environment,
 		form: state.form,
+		focused: state.focus,
 		...createEditorMapProps('body')(state),
 		...createEditorMapProps('footer')(state)
 	};
@@ -37,6 +38,22 @@ function mapDispatch(dispatch) {
 		onBlur: dispatch,
 		onFocus: dispatch,
 		onKeypress: dispatch,
+		onNavigateForward() {
+			dispatch({
+				type: 'FORM_NAVIGATE_FORWARD',
+				payload: {
+					length: 1
+				}
+			});
+		},
+		onNavigateBackward() {
+			dispatch({
+				type: 'FORM_NAVIGATE_BACKWARD',
+				payload: {
+					length: 1
+				}
+			});
+		},
 		...createEditorMapDispatch('body')(dispatch),
 		...createEditorMapDispatch('footer')(dispatch)
 	};

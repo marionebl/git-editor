@@ -1,6 +1,7 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component, PropTypes as t} from 'react';
 import pure from 'pure-render-decorator';
 import autobind from 'autobind-decorator';
+import {noop} from 'lodash';
 
 import Input from '../input';
 import Area from '../area';
@@ -18,8 +19,7 @@ function getMaxLength() {
 		.sort((a, b) => b - a)[0];
 }
 
-function getFieldOffset(name, form) {
-	const {focused} = form;
+function getFieldOffset(name, form, focused) {
 	const value = form[name] || '';
 	const isFocused = focused === name;
 
@@ -36,16 +36,29 @@ function getFieldOffset(name, form) {
 }
 
 @pure
+@autobind
 class Form extends Component {
 	static placeholders = placeholders;
 
 	static propTypes = {
-		onBlur: PropTypes.func,
-		onFocus: PropTypes.func,
-		onKeypress: PropTypes.func,
-		form: PropTypes.any,
-		body: PropTypes.any,
-		footer: PropTypes.any
+		onBlur: t.func,
+		onFocus: t.func,
+		onKeypress: t.func,
+		onNavigateForward: t.func,
+		onNavigateBackward: t.func,
+		onNavigateForwardInfinity: t.func,
+		onNavigateBackwardInfinity: t.func,
+		form: t.any,
+		focused: t.string,
+		body: t.any,
+		footer: t.any
+	};
+
+	static defaultProps = {
+		onNavigateForward: noop,
+		onNavigateForwardInfinity: noop,
+		onNavigateBackward: noop,
+		onNavigateBackwardInfinity: noop
 	};
 
 	constructor(props, context) {
@@ -54,29 +67,91 @@ class Form extends Component {
 	}
 
 	componentDidMount() {
+		const {form} = this.nodes;
+		if (form) {
+			const {screen} = form;
 
+			screen.on('keypress', this.handleScreenKeyPress);
+		}
 	}
 
-	@autobind
+	componentWillUnmount() {
+		const {form} = this.nodes;
+		if (form) {
+			const {screen} = form;
+			screen.off('keypress', this.handleScreenKeyPress);
+		}
+	}
+
+	handleNavigateForward() {
+		this.props.onNavigateForward();
+	}
+
+	handleNavigateForwardInfinity() {
+		this.props.onNavigateForwardInfinity();
+	}
+
+	handleNavigateBackward() {
+		this.props.onNavigateBackward();
+	}
+
+	handleNavigateBackwardInfinity() {
+		this.props.onNavigateBackwardInfinity();
+	}
+
+	handleNavigateUp() {
+		
+	}
+
+	handleNavigateDown() {
+		
+	}
+
+	handleScreenKeyPress(data, character) {
+		switch (character.full) {
+			case 'tab':
+			case 'right':
+			case 'C-right':
+				this.handleNavigateForward();
+				break;
+			case 'C-a':
+				this.handleNavigateForwardInfinity();
+				break;
+			case 'S-tab':
+			case 'left':
+			case 'C-left':
+				this.handleNavigateBackward();
+				break;
+			case 'C-e':
+				this.handleNavigateBackwardInfinity();
+				break;
+			case 'up':
+				this.handleNavigateUp();
+				break;
+			case 'down':
+				this.handleNavigateDown();
+				break;
+			default:
+				break;
+		}
+	}
+
 	handleBlur(e) {
-		this.props.onBlur({
+		/* this.props.onBlur({
 			type: `INPUT_BLUR`,
 			payload: e.props.name
-		});
+		}); */
 	}
 
-	@autobind
 	handleFocus(e) {
-		// console.log(e.props.name);
-		this.props.onFocus({
+		/* this.props.onFocus({
 			type: `INPUT_FOCUS`,
 			payload: e.props.name
-		});
+		}); */
 	}
 
-	@autobind
 	handleKeypress(e) {
-		this.props.onKeypress({
+		/* this.props.onKeypress({
 			type: `INPUT_KEYPRESS`,
 			payload: {
 				name: e.props.name,
@@ -84,22 +159,13 @@ class Form extends Component {
 				focused: e.target.focused,
 				value: e.value
 			}
-		});
+		}); */
 	}
 
-	@autobind
-	handleNavigation(e) {
-		const {direction} = e.data;
-		// TODO: Send this to store and maintain a focusIndex instead
-		if (direction === 'next') {
-			this.nodes.form.focusNext();
-		}
-		if (direction === 'previous') {
-			this.nodes.form.focusPrevious();
-		}
+	handleNavigation() {
+
 	}
 
-	@autobind
 	saveNode(name) {
 		return ref => {
 			this.nodes[name] = ref;
@@ -107,16 +173,17 @@ class Form extends Component {
 	}
 
 	render() {
-		const {form, body, footer} = this.props;
-		const {focused} = form;
+		const {form, focused, body, footer} = this.props;
 
-		const typeOffset = getFieldOffset('type', form);
-		const scopeOffset = typeOffset + getFieldOffset('scope', form);
+		const typeOffset = getFieldOffset('type', form, focused);
+		const scopeOffset = typeOffset + getFieldOffset('scope', form, focused);
 		const bodyHeight = Math.max(0, (form.body || '').split('\n').length);
 		const bodyOffset = bodyHeight > 0 ? bodyHeight + 1 : 0;
 
 		return (
-			<form ref={this.saveNode('form')} keys>
+			<form
+				ref={this.saveNode('form')}
+				>
 				<box>
 					<box>
 						<Input
@@ -125,8 +192,6 @@ class Form extends Component {
 							focus={focused === 'type'}
 							ref={this.saveNode('type')}
 							value={form.type}
-							onBlur={this.handleBlur}
-							onFocus={this.handleFocus}
 							onKeypress={this.handleKeypress}
 							/>
 						<text left={typeOffset}>(</text>
@@ -137,8 +202,6 @@ class Form extends Component {
 							focus={focused === 'scope'}
 							ref={this.saveNode('scope')}
 							value={form.scope}
-							onBlur={this.handleBlur}
-							onFocus={this.handleFocus}
 							onKeypress={this.handleKeypress}
 							/>
 						<text left={scopeOffset + 1}>)</text>
@@ -151,8 +214,6 @@ class Form extends Component {
 							focus={focused === 'subject'}
 							ref={this.saveNode('subject')}
 							value={form.subject}
-							onBlur={this.handleBlur}
-							onFocus={this.handleFocus}
 							onKeypress={this.handleKeypress}
 							/>
 					</box>
@@ -164,8 +225,6 @@ class Form extends Component {
 							name="body"
 							placeholder="Body"
 							focus={focused === 'body'}
-							onBlur={this.handleBlur}
-							onFocus={this.handleFocus}
 							/>
 						<Area
 							{...footer}
@@ -174,8 +233,6 @@ class Form extends Component {
 							name="footer"
 							placeholder="Footer"
 							focus={focused === 'footer'}
-							onBlur={this.handleBlur}
-							onFocus={this.handleFocus}
 							/>
 					</box>
 				</box>
