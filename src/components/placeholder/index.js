@@ -6,21 +6,31 @@ export class Placeholder extends Component {
 	static propTypes = {
 		children: t.string.isRequired,
 		focus: t.bool,
-		styles: t.any
+		style: t.any,
+		activeStyle: t.any
 	};
 
 	static defaultProps = {
 		children: 'Placeholder',
 		top: 0,
 		left: 0,
-		styles: {
+		style: {
 			bg: 'transparent',
 			fg: 'grey'
+		},
+		activeStyle: {
+			bg: '#42535b'
 		}
 	};
 
 	render() {
-		const {children, focus, ...other} = this.props;
+		const {
+			activeStyle,
+			children,
+			focus,
+			...other
+		} = this.props;
+
 		return (
 			<box {...other}>
 				{children}
@@ -32,7 +42,7 @@ export class Placeholder extends Component {
 							left={0}
 							width={1}
 							height={1}
-							style={{bg: '#42535b'}}
+							style={activeStyle}
 							/>
 				}
 			</box>

@@ -21,6 +21,30 @@ export class Focusable extends Component {
 
 	node = null;
 
+	componentDidMount() {
+		if (this.node && this.props.focus) {
+			this.node.focus();
+			this.node.enableKeys();
+			this.node.screen.focusPush(this.node);
+		}
+		if (this.node && !this.props.focus) {
+			this.node.off('keypress');
+			this.node.screen.focusPop(this.node);
+		}
+	}
+
+	componentDidUpdate() {
+		if (this.node && this.props.focus) {
+			this.node.focus();
+			this.node.enableKeys();
+			this.node.screen.focusPush(this.node);
+		}
+		if (this.node && !this.props.focus) {
+			this.node.off('keypress');
+			this.node.screen.focusPop(this.node);
+		}
+	}
+
 	saveNode(ref) {
 		this.node = ref.node || ref;
 	}

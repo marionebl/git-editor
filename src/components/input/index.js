@@ -81,23 +81,11 @@ class Input extends Component {
 				{
 					placeholder && value.length === 0 ?
 						<Placeholder
-							focus={false}
+							focus={focus}
 							style={styles.placeholder}
 							>
 							{placeholder}
 						</Placeholder> :
-						null
-				}
-				{/* cursor */}
-				{
-					focus ?
-						<box
-							content={value ? ' ' : placeholder[0]}
-							left={Math.max(0, value.length)}
-							width={1}
-							height={1}
-							style={{bg: '#42535b'}}
-							/> :
 						null
 				}
 			</box>

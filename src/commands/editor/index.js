@@ -98,6 +98,7 @@ async function gitEditor(message, options) {
 				const nextReducers = createReducers();
 				const next = combineReducers(nextReducers);
 				store.replaceReducer(next);
+				screen.off('keypress');
 				render(screen, store);
 				console.log('Hot swap successful');
 			} catch (error) {

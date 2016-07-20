@@ -45,16 +45,6 @@ class Area extends Component {
 
 	nodes = {};
 
-	handleBlur({target}) {
-		const {props} = this;
-		props.onBlur({target, props});
-	}
-
-	handleFocus({target}) {
-		const {props} = this;
-		props.onFocus({target, props});
-	}
-
 	render() {
 		const {
 			top,

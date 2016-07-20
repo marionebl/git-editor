@@ -106,7 +106,51 @@ class Form extends Component {
 		const {props} = this;
 
 		if (['body', 'footer'].includes(props.focused)) {
-			return;
+			const area = props[props.focused];
+			const {cursor, children = ''} = area;
+			const lines = children.split('\n');
+
+			switch (character.full) {
+				case 'S-tab':
+					break;
+				case 'tab': {
+					if (children.length === 0) {
+						break;
+					} else {
+						return;
+					}
+				}
+				case 'left': {
+					if (cursor.y === 0 && cursor.x === 0) {
+						break;
+					} else {
+						return;
+					}
+				}
+				case 'right': {
+					const count = lines.length - 1;
+					const last = lines[count];
+					if (cursor.y === count && cursor.x === last.length) {
+						break;
+					} else {
+						return;
+					}
+				}
+				case 'up': {
+					if (cursor.y === 0) {
+						break;
+					} else {
+						return;
+					}
+				}
+				case 'down': {
+					if (cursor.y === lines.length - 1) {
+						break;
+					} else {
+						return;
+					}
+				}
+			}
 		}
 
 		switch (character.full) {
@@ -142,7 +186,7 @@ class Form extends Component {
 
 		const typeOffset = getFieldOffset('type', form, focused);
 		const scopeOffset = typeOffset + getFieldOffset('scope', form, focused);
-		const bodyHeight = Math.max(0, (form.body || '').split('\n').length);
+		const bodyHeight = Math.max(0, (body.children || '').split('\n').length);
 		const bodyOffset = bodyHeight > 0 ? bodyHeight + 1 : 0;
 
 		return (
