@@ -12,29 +12,6 @@ const placeholders = {
 	subject: 'subject'
 };
 
-function getMaxLength() {
-	return Array.prototype.slice.call(arguments)
-		.filter(Boolean)
-		.map(arg => arg.length)
-		.sort((a, b) => b - a)[0];
-}
-
-function getFieldOffset(name, form, focused) {
-	const value = form[name] || '';
-	const isFocused = focused === name;
-
-	if (isFocused && value.length > 0) {
-		const maxLength = getMaxLength(form.type, placeholders.type);
-		return value.length >= maxLength ?
-			value.length + 1 :
-			maxLength;
-	}
-
-	return value ?
-		value.length :
-		placeholders[name].length;
-}
-
 @pure
 @autobind
 class Form extends Component {
@@ -48,10 +25,16 @@ class Form extends Component {
 		onNavigateBackward: t.func,
 		onNavigateForwardInfinity: t.func,
 		onNavigateBackwardInfinity: t.func,
+		onNavigateLineStart: t.func,
+		onNavigateLineEnd: t.func,
 		onNavigateUp: t.func,
 		onNavigateDown: t.func,
-		form: t.any,
+		onInsertion: t.func,
+		onDeletion: t.func,
 		focused: t.string,
+		type: t.any,
+		scope: t.any,
+		subject: t.any,
 		body: t.any,
 		footer: t.any
 	};
@@ -61,30 +44,16 @@ class Form extends Component {
 		onNavigateForwardInfinity: noop,
 		onNavigateBackward: noop,
 		onNavigateBackwardInfinity: noop,
+		onNavigateLineStart: noop,
+		onNavigateLineEnd: noop,
 		onNavigateUp: noop,
-		onNavigateDown: noop
+		onNavigateDown: noop,
+		onInsertion: noop,
+		onDeletion: noop
 	};
 
 	nodes = {};
 	attached = false;
-
-	componentDidMount() {
-		const {form} = this.nodes;
-
-		if (form && !this.attached) {
-			const {screen} = form;
-			screen.on('keypress', this.handleScreenKeyPress);
-			this.attached = true;
-		}
-	}
-
-	componentWillUnmount() {
-		const {form} = this.nodes;
-		if (form) {
-			const {screen} = form;
-			screen.off('keypress', this.handleScreenKeyPress);
-		}
-	}
 
 	handleNavigateForward() {
 		this.props.onNavigateForward();
@@ -102,66 +71,88 @@ class Form extends Component {
 		this.props.onNavigateDown();
 	}
 
+	handleNavigateLineStart() {
+		this.props.onNavigateLineStart();
+	}
+
+	handleNavigateLineEnd() {
+		this.props.onNavigateLineEnd();
+	}
+
 	handleScreenKeyPress(data, character) {
 		const {props} = this;
 
-		if (['body', 'footer'].includes(props.focused)) {
-			const area = props[props.focused];
-			const {cursor, children = ''} = area;
-			const lines = children.split('\n');
-
-			switch (character.full) {
-				case 'S-tab':
-					break;
-				case 'tab': {
-					if (children.length === 0) {
-						break;
-					} else {
-						return;
-					}
-				}
-				case 'left': {
-					if (cursor.y === 0 && cursor.x === 0) {
-						break;
-					} else {
-						return;
-					}
-				}
-				case 'right': {
-					const count = lines.length - 1;
-					const last = lines[count];
-					if (cursor.y === count && cursor.x === last.length) {
-						break;
-					} else {
-						return;
-					}
-				}
-				case 'up': {
-					if (cursor.y === 0) {
-						break;
-					} else {
-						return;
-					}
-				}
-				case 'down': {
-					if (cursor.y === lines.length - 1) {
-						break;
-					} else {
-						return;
-					}
-				}
-			}
-		}
+		const area = props[props.focused];
+		const {cursor, children = ''} = area;
+		const lines = children.split('\n');
 
 		switch (character.full) {
-			case 'tab':
-			case 'right':
+			case 'S-tab':
+				break;
+			case 'tab': {
+				if (children.length === 0) {
+					break;
+				} else {
+					return;
+				}
+			}
+			case 'left': {
+				if (cursor.y === 0 && cursor.x === 0) {
+					break;
+				} else {
+					return;
+				}
+			}
+			case 'right': {
+				const count = lines.length - 1;
+				const last = lines[count];
+				if (cursor.y === count && cursor.x === last.length) {
+					break;
+				} else {
+					return;
+				}
+			}
+			case 'up': {
+				if (cursor.y === 0) {
+					break;
+				} else {
+					return;
+				}
+			}
+			case 'down': {
+				if (cursor.y === lines.length - 1) {
+					break;
+				} else {
+					return;
+				}
+			}
+			default:
+				return;
+		}
+
+	/* c	const value = props.form[props.focused] ||
+			props.focused in props ?
+				[props.focused].children : '';
+
+		switch (character.full) {
 			case 'C-right':
+			case 'right': {
+				if ((value || '').length === 0) {
+					this.handleNavigateForward();
+				}
+				break;
+			}
+			case 'tab':
 				this.handleNavigateForward();
 				break;
-			case 'S-tab':
 			case 'left':
-			case 'C-left':
+			case 'C-left': {
+				if ((value || '').length === 0) {
+					this.handleNavigateBackward();
+				}
+				break;
+			}
+			case 'S-tab':
 				this.handleNavigateBackward();
 				break;
 			case 'up':
@@ -170,62 +161,72 @@ class Form extends Component {
 			case 'down':
 				this.handleNavigateDown();
 				break;
-			default:
+			case 'C-e':
+				this.handleNavigateLineEnd();
 				break;
-		}
-	}
-
-	saveNode(name) {
-		return ref => {
-			this.nodes[name] = ref;
-		};
+			case 'C-a':
+				this.handleNavigateLineStart();
+				break;
+			case 'backspace':
+				this.handleDeletion();
+				break;
+			default:
+				this.handleInsertion(data);
+				break;
+		}  */
 	}
 
 	render() {
-		const {form, focused, body, footer} = this.props;
+		const {
+			focused,
+			body,
+			footer,
+			type,
+			scope,
+			subject
+		} = this.props;
 
-		const typeOffset = getFieldOffset('type', form, focused);
-		const scopeOffset = typeOffset + getFieldOffset('scope', form, focused);
 		const bodyHeight = Math.max(0, (body.children || '').split('\n').length);
 		const bodyOffset = bodyHeight > 0 ? bodyHeight + 1 : 0;
 
+		const typeWidth = type.children ? type.children.length : 'type'.length;
+		const scopeWidth = scope.children ? scope.children.length : 'scope'.length;
+
 		return (
-			<form
-				ref={this.saveNode('form')}
-				>
+			<form>
 				<box>
-					<box>
-						<Input
-							name="type"
-							placeholder="type"
-							focus={focused === 'type'}
-							ref={this.saveNode('type')}
-							value={form.type}
-							onKeypress={this.handleKeypress}
-							/>
-						<text left={typeOffset}>(</text>
-						<Input
-							left={typeOffset + 1}
-							name="scope"
-							placeholder="scope"
-							focus={focused === 'scope'}
-							ref={this.saveNode('scope')}
-							value={form.scope}
-							onKeypress={this.handleKeypress}
-							/>
-						<text left={scopeOffset + 1}>)</text>
-						<text left={scopeOffset + 2}>:</text>
-						<text left={scopeOffset + 3}> </text>
-						<Input
-							left={scopeOffset + 4}
-							name="subject"
-							placeholder="subject"
-							focus={focused === 'subject'}
-							ref={this.saveNode('subject')}
-							value={form.subject}
-							onKeypress={this.handleKeypress}
-							/>
-					</box>
+					<Input
+						{...type}
+						value={type.children}
+						top={0}
+						name="type"
+						placeholder="type"
+						focus={focused === 'type'}
+						width={typeWidth}
+						/>
+					<box left={typeWidth} width={1}>(</box>
+					<Input
+						{...scope}
+						value={scope.children}
+						top={0}
+						left={typeWidth + 1}
+						name="scope"
+						placeholder="scope"
+						focus={focused === 'scope'}
+						width={scopeWidth}
+						/>
+					<box left={typeWidth + scopeWidth + 1} width={1}>)</box>
+					<box left={typeWidth + scopeWidth + 2} width={1}>:</box>
+					<Input
+						{...subject}
+						value={subject.children}
+						top={0}
+						left={typeWidth + scopeWidth + 4}
+						name="subject"
+						placeholder="subject"
+						focus={focused === 'subject'}
+						width={type.children ? type.children.length : 'subject'.length}
+						/>
 					<box top={2} left={0}>
 						<Area
 							{...body}

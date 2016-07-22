@@ -48,17 +48,26 @@ async function gitEditor(message, options) {
 	const form = filled ? parsed : {};
 
 	const initial = merge({}, previous, {
-		log: [],
 		environment: options.environment,
 		debug: options.debug,
-		form,
+		type: {
+			contents: form.type,
+			cursor: previous.type && previous.type.cursor ? previous.type.cursor : {x: 0, y: 0}
+		},
+		scope: {
+			contents: form.scope,
+			cursor: previous.scope && previous.scope.cursor ? previous.scope.cursor : {x: 0, y: 0}
+		},
+		subject: {
+			contents: form.subject,
+			cursor: previous.subject && previous.subject.cursor ? previous.subject.cursor : {x: 0, y: 0}
+		},
 		body: {
 			contents: form.body,
-			cursor: {x: 0, y: 0}
+			cursor: previous.body && previous.body.cursor ? previous.body.cursor : {x: 0, y: 0}
 		},
 		footer: {
-			contents: form.footer,
-			cursor: {x: 0, y: 0}
+			contents: form.footer
 		}
 	});
 

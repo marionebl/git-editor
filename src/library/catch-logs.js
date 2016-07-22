@@ -1,6 +1,6 @@
 import {inspect} from 'util';
 
-function catchLogs(screen, store) {
+function catchLogs(screen) {
 	const natives = {
 		log: console.log,
 		error: console.error,
@@ -32,18 +32,6 @@ function catchLogs(screen, store) {
 		console.error = natives.error;
 		console.info = natives.info;
 		console.debug = natives.debug;
-	});
-
-	// Try to dump the log when the application comes crashing down
-	process.on('exit', code => {
-		if (code === 0) {
-			return;
-		}
-		process.stdout.write('\n');
-		const {log} = store.getState();
-		log.forEach(line => {
-			process.stdout.write(`${line}\n`);
-		});
 	});
 }
 

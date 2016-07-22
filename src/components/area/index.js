@@ -38,9 +38,12 @@ class Area extends Component {
 		focus: t.bool,
 		onBlur: t.func,
 		onFocus: t.func,
-		gutter: t.shape({
-			hidden: t.bool
-		})
+		gutter: t.oneOfType([
+			t.shape({
+				hidden: t.bool
+			}),
+			t.bool
+		])
 	};
 
 	nodes = {};

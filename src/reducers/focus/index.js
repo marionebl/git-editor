@@ -1,5 +1,7 @@
+import select from './select';
 import navigate from './navigate';
 import navigateLine from './navigate-line';
+import navigateOnLine from './navigate-on-line';
 
 const space = [
 	['type', 'scope', 'subject'],
@@ -25,8 +27,14 @@ export function focusReducer(state = '', action) {
 			const {payload: {length}} = action;
 			return navigateLine(state, length * -1, space);
 		}
+		case 'FORM_NAVIGATE_LINE_END': {
+			return navigateOnLine(state, Infinity, space);
+		}
+		case 'FORM_NAVIGATE_LINE_START': {
+			return navigateOnLine(state, 0, space);
+		}
 		default:
-			return state;
+			return state || select(0, 0, space);
 	}
 }
 

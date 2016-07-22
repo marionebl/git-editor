@@ -4,8 +4,6 @@ import {createEditorReducers} from 'react-blessed-editor';
 import debug from './debug';
 import environment from './environment';
 import focus from './focus';
-import form from './form';
-import log from './log';
 import validate from './validate';
 
 export function createReducers(amend = {}) {
@@ -13,9 +11,10 @@ export function createReducers(amend = {}) {
 		debug,
 		environment,
 		focus,
-		form,
-		log,
 		validate,
+		...createEditorReducers('type'),
+		...createEditorReducers('scope'),
+		...createEditorReducers('subject'),
 		...createEditorReducers('body'),
 		...createEditorReducers('footer')
 	};

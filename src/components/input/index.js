@@ -1,6 +1,8 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component, PropTypes as t} from 'react';
 import pure from 'pure-render-decorator';
 import autobind from 'autobind-decorator';
+
+import {Editor} from 'react-blessed-editor';
 import {noop} from 'lodash';
 
 import Focusable from '../focusable';
@@ -20,74 +22,64 @@ const styles = {
 class Input extends Component {
 	static styles = styles;
 
-	static propTypes = {
-		focus: PropTypes.bool,
-		placeholder: PropTypes.string.isRequired,
-		name: PropTypes.string.isRequired,
-		style: PropTypes.any,
-		value: PropTypes.string,
-		onBlur: PropTypes.func,
-		onFocus: PropTypes.func,
-		onKeypress: PropTypes.func
-	};
-
 	static defaultProps = {
 		onBlur: noop,
 		onFocus: noop,
-		onKeypress: noop,
+		focus: false,
 		value: '',
-		placeholder: '',
-		style: {}
+		placeholder: ''
 	};
 
-	saveNode(ref) {
-		this.node = ref.node || ref;
-	}
+	static propTypes = {
+		top: t.number,
+		left: t.number,
+		value: t.string,
+		placeholder: t.string,
+		focus: t.bool,
+		onBlur: t.func,
+		onFocus: t.func,
+		gutter: t.shape({
+			hidden: t.bool
+		})
+	};
 
-	handleKeypress(_, data) {
-		const {props, node: target} = this;
-		props.onKeypress({target, props, data});
-	}
+	nodes = {};
 
 	render() {
 		const {
-			focus,
-			value: passed,
+			top,
+			left,
 			placeholder,
+			value,
+			focus,
 			...other
 		} = this.props;
 
-		const value = passed || '';
-
 		return (
 			<box
-				{...other}
-				input={false}
-				keyable={false}
+				top={top}
+				left={left}
 				>
-				{/* actual textual input */}
 				<Focusable
-					style={styles.default}
 					{...other}
-					left={0}
-					top={0}
-					component="textbox"
-					inputOnFocus={false}
-					onKeypress={this.handleKeypress}
-					ref={this.saveNode}
-					value={value}
+					content={value}
+					focus={focus}
+					component={Editor}
+					onFocus={this.handleFocus}
+					onBlur={this.handleBlur}
+					multiline={false}
 					/>
-				{/* placeholder */}
-				{
-					placeholder && value.length === 0 ?
-						<Placeholder
-							focus={focus}
-							style={styles.placeholder}
-							>
-							{placeholder}
-						</Placeholder> :
-						null
-				}
+					{/* placeholder */}
+					{
+						placeholder && value.length === 0 ?
+							<Placeholder
+								focus={focus}
+								style={styles.placeholder}
+								>
+								{placeholder}
+							</Placeholder> :
+							null
+					}
 			</box>
 		);
 	}

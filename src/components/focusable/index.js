@@ -7,7 +7,10 @@ import {noop} from 'lodash';
 export class Focusable extends Component {
 	static propTypes = {
 		children: t.node,
-		component: t.node.isRequired,
+		component: t.oneOfType([
+			t.string,
+			t.func
+		]).isRequired,
 		focus: t.bool.isRequired,
 		onBlur: t.func.isRequired,
 		onFocus: t.func.isRequired
@@ -22,26 +25,38 @@ export class Focusable extends Component {
 	node = null;
 
 	componentDidMount() {
-		if (this.node && this.props.focus) {
+		if (!this.node) {
+			return;
+		}
+
+		if (this.props.focus) {
 			this.node.focus();
 			this.node.enableKeys();
 			this.node.screen.focusPush(this.node);
+			return;
 		}
-		if (this.node && !this.props.focus) {
-			this.node.off('keypress');
-			this.node.screen.focusPop(this.node);
-		}
+
+		// console.log('!!!');
+		// this.node.off('keypress');
+		// this.node.screen.focusPop(this.node);
 	}
 
 	componentDidUpdate() {
-		if (this.node && this.props.focus) {
+		if (!this.node) {
+			return;
+		}
+
+		if (this.props.focus) {
 			this.node.focus();
 			this.node.enableKeys();
 			this.node.screen.focusPush(this.node);
+			return;
 		}
-		if (this.node && !this.props.focus) {
-			this.node.off('keypress');
-			this.node.screen.focusPop(this.node);
+
+		if (!this.props.focus) {
+			// this.node.off('keypress');
+			// console.log('!!!');
+			// this.node.screen.focusPop(this.node);
 		}
 	}
 
