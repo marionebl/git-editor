@@ -67,7 +67,8 @@ async function gitEditor(message, options) {
 			cursor: previous.body && previous.body.cursor ? previous.body.cursor : {x: 0, y: 0}
 		},
 		footer: {
-			contents: form.footer
+			contents: form.footer,
+			cursor: previous.footer && previous.footer.cursor ? previous.footer.cursor : {x: 0, y: 0}
 		}
 	});
 

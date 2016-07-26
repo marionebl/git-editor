@@ -86,7 +86,9 @@ class Form extends Component {
 		const {cursor, children = ''} = area;
 		const lines = children.split('\n');
 
-		switch (character.full) {
+		console.log(character);
+
+		/* switch (character.full) {
 			case 'S-tab':
 				break;
 			case 'tab': {
@@ -128,7 +130,7 @@ class Form extends Component {
 			}
 			default:
 				return;
-		}
+		} */
 
 	/* c	const value = props.form[props.focused] ||
 			props.focused in props ?

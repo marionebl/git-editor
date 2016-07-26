@@ -45,6 +45,10 @@ class Input extends Component {
 
 	nodes = {};
 
+	handleKeypress(data, character) {
+		console.log({data, character});
+	}
+
 	render() {
 		const {
 			top,
@@ -65,9 +69,8 @@ class Input extends Component {
 					content={value}
 					focus={focus}
 					component={Editor}
-					onFocus={this.handleFocus}
-					onBlur={this.handleBlur}
 					multiline={false}
+					onKeypress={this.handleKeypress}
 					/>
 					{/* placeholder */}
 					{
