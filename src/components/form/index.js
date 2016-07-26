@@ -99,7 +99,7 @@ class Form extends Component {
 
 		return (
 			<box>
-				<form bottom={2}>
+				<form>
 					<box width="100%">
 						<Input
 							{...type}
@@ -167,6 +167,13 @@ class Form extends Component {
 						]
 							.filter(Boolean).join(' | ')
 					}
+					{/* help text */}
+					<box
+						style={{fg: 'grey', border: {fg: 'grey'}}}
+						width={25}
+						right={0}>
+						C-c to abort, C-s to save
+					</box>
 				</box>
 			</box>
 		);

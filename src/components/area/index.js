@@ -63,8 +63,6 @@ class Area extends Component {
 			...other
 		} = this.props;
 
-		console.log({highlight});
-
 		return (
 			<box
 				top={top}

@@ -239,6 +239,7 @@ function createEditorFormMapDispatch(id) {
 				onGoLeft(...args) {
 					const [props] = args;
 					const {cursor} = props;
+					console.log(cursor);
 					if (cursor.y === 0 && cursor.x === 0) {
 						dispatch({
 							type: 'FORM_NAVIGATE_BACKWARD',
@@ -253,6 +254,7 @@ function createEditorFormMapDispatch(id) {
 			}
 		};
 
+		console.log(editorFormDispatch);
 		return merge({}, editorDispatch, editorFormDispatch);
 	};
 }
