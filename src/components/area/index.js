@@ -38,6 +38,10 @@ class Area extends Component {
 		focus: t.bool,
 		onBlur: t.func,
 		onFocus: t.func,
+		highlight: t.oneOfType([
+			t.string,
+			t.bool
+		]),
 		gutter: t.oneOfType([
 			t.shape({
 				hidden: t.bool
@@ -55,8 +59,11 @@ class Area extends Component {
 			placeholder,
 			value,
 			focus,
+			highlight,
 			...other
 		} = this.props;
+
+		console.log({highlight});
 
 		return (
 			<box
@@ -68,8 +75,7 @@ class Area extends Component {
 					content={value}
 					focus={focus}
 					component={Editor}
-					onFocus={this.handleFocus}
-					onBlur={this.handleBlur}
+					highlight={highlight}
 					/>
 					{/* placeholder */}
 					{

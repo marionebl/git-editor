@@ -46,7 +46,7 @@ class Input extends Component {
 	nodes = {};
 
 	handleKeypress(data, character) {
-		console.log({data, character});
+
 	}
 
 	render() {

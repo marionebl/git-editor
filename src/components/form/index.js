@@ -99,7 +99,7 @@ class Form extends Component {
 
 		return (
 			<box>
-				<form>
+				<form bottom={2}>
 					<box width="100%">
 						<Input
 							{...type}
@@ -140,6 +140,7 @@ class Form extends Component {
 								name="body"
 								placeholder="Body"
 								focus={focused === 'body'}
+								highlight="git"
 								/>
 							<Area
 								{...footer}
@@ -148,6 +149,7 @@ class Form extends Component {
 								name="footer"
 								placeholder="Footer"
 								focus={focused === 'footer'}
+								highlight="git"
 								/>
 						</box>
 					</box>

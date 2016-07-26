@@ -38,6 +38,10 @@ function wrap(name, data) {
 	};
 }
 
+function unwrap(name, data) {
+	return data[name].contents || '';
+}
+
 function getInitialState(message, options, previous) {
 	const {environment, debug} = options;
 	const parsed = message ? commit.parse(message) : {};
@@ -67,15 +71,15 @@ function wait(screen, store) {
 
 		// Let the user save and quit
 		screen.key(['C-s'], () => {
-			screen.destroy();
-			const {form} = store.getState();
-			resolve(commit.stringify({
-				type: form.type,
-				scope: form.scope,
-				subject: form.subject,
-				body: form.body,
-				footer: form.footer
-			}));
+			const state = store.getState();
+			const message = commit.stringify({
+				type: unwrap('type', state),
+				scope: unwrap('scope', state),
+				subject: unwrap('subject', state),
+				body: unwrap('body', state),
+				footer: unwrap('footer', state)
+			});
+			resolve(message);
 		});
 	});
 }

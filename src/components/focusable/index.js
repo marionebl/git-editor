@@ -35,10 +35,6 @@ export class Focusable extends Component {
 			this.node.screen.focusPush(this.node);
 			return;
 		}
-
-		// console.log('!!!');
-		// this.node.off('keypress');
-		// this.node.screen.focusPop(this.node);
 	}
 
 	componentDidUpdate() {
@@ -51,12 +47,6 @@ export class Focusable extends Component {
 			this.node.enableKeys();
 			this.node.screen.focusPush(this.node);
 			return;
-		}
-
-		if (!this.props.focus) {
-			// this.node.off('keypress');
-			// console.log('!!!');
-			// this.node.screen.focusPop(this.node);
 		}
 	}
 
