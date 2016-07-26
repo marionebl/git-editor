@@ -1,9 +1,9 @@
 import path from 'path';
-import level from 'level';
+import {LocalStorage} from 'node-localstorage';
 
 export async function create(basePath = process.cwd(), options) {
-	const directory = path.resolve(basePath, '.level');
-	return level(directory, options);
-};
+	const directory = path.resolve(basePath, '.localstorage');
+	return new LocalStorage(directory);
+}
 
 export default create;

@@ -79,105 +79,6 @@ class Form extends Component {
 		this.props.onNavigateLineEnd();
 	}
 
-	handleScreenKeyPress(data, character) {
-		const {props} = this;
-
-		const area = props[props.focused];
-		const {cursor, children = ''} = area;
-		const lines = children.split('\n');
-
-		console.log(character);
-
-		/* switch (character.full) {
-			case 'S-tab':
-				break;
-			case 'tab': {
-				if (children.length === 0) {
-					break;
-				} else {
-					return;
-				}
-			}
-			case 'left': {
-				if (cursor.y === 0 && cursor.x === 0) {
-					break;
-				} else {
-					return;
-				}
-			}
-			case 'right': {
-				const count = lines.length - 1;
-				const last = lines[count];
-				if (cursor.y === count && cursor.x === last.length) {
-					break;
-				} else {
-					return;
-				}
-			}
-			case 'up': {
-				if (cursor.y === 0) {
-					break;
-				} else {
-					return;
-				}
-			}
-			case 'down': {
-				if (cursor.y === lines.length - 1) {
-					break;
-				} else {
-					return;
-				}
-			}
-			default:
-				return;
-		} */
-
-	/* c	const value = props.form[props.focused] ||
-			props.focused in props ?
-				[props.focused].children : '';
-
-		switch (character.full) {
-			case 'C-right':
-			case 'right': {
-				if ((value || '').length === 0) {
-					this.handleNavigateForward();
-				}
-				break;
-			}
-			case 'tab':
-				this.handleNavigateForward();
-				break;
-			case 'left':
-			case 'C-left': {
-				if ((value || '').length === 0) {
-					this.handleNavigateBackward();
-				}
-				break;
-			}
-			case 'S-tab':
-				this.handleNavigateBackward();
-				break;
-			case 'up':
-				this.handleNavigateUp();
-				break;
-			case 'down':
-				this.handleNavigateDown();
-				break;
-			case 'C-e':
-				this.handleNavigateLineEnd();
-				break;
-			case 'C-a':
-				this.handleNavigateLineStart();
-				break;
-			case 'backspace':
-				this.handleDeletion();
-				break;
-			default:
-				this.handleInsertion(data);
-				break;
-		}  */
-	}
-
 	render() {
 		const {
 			focused,
@@ -194,61 +95,78 @@ class Form extends Component {
 		const typeWidth = type.children ? type.children.length : 'type'.length;
 		const scopeWidth = scope.children ? scope.children.length : 'scope'.length;
 
+		const isHeaderFocused = ['type', 'scope', 'subject'].includes(focused);
+
 		return (
-			<form>
-				<box>
-					<Input
-						{...type}
-						value={type.children}
-						top={0}
-						name="type"
-						placeholder="type"
-						focus={focused === 'type'}
-						width={typeWidth}
-						/>
-					<box left={typeWidth} width={1}>(</box>
-					<Input
-						{...scope}
-						value={scope.children}
-						top={0}
-						left={typeWidth + 1}
-						name="scope"
-						placeholder="scope"
-						focus={focused === 'scope'}
-						width={scopeWidth}
-						/>
-					<box left={typeWidth + scopeWidth + 1} width={1}>)</box>
-					<box left={typeWidth + scopeWidth + 2} width={1}>:</box>
-					<Input
-						{...subject}
-						value={subject.children}
-						top={0}
-						left={typeWidth + scopeWidth + 4}
-						name="subject"
-						placeholder="subject"
-						focus={focused === 'subject'}
-						width={type.children ? type.children.length : 'subject'.length}
-						/>
-					<box top={2} left={0}>
-						<Area
-							{...body}
-							value={body.children}
+			<box>
+				<form>
+					<box width="100%">
+						<Input
+							{...type}
+							value={type.children}
 							top={0}
-							name="body"
-							placeholder="Body"
-							focus={focused === 'body'}
+							name="type"
+							placeholder="type"
+							focus={focused === 'type'}
+							width={typeWidth}
 							/>
-						<Area
-							{...footer}
-							value={footer.children}
-							top={bodyOffset}
-							name="footer"
-							placeholder="Footer"
-							focus={focused === 'footer'}
+						<box left={typeWidth} width={1}>(</box>
+						<Input
+							{...scope}
+							value={scope.children}
+							top={0}
+							left={typeWidth + 1}
+							name="scope"
+							placeholder="scope"
+							focus={focused === 'scope'}
+							width={scopeWidth}
 							/>
+						<box left={typeWidth + scopeWidth + 1} width={1}>)</box>
+						<box left={typeWidth + scopeWidth + 2} width={1}>:</box>
+						<Input
+							{...subject}
+							value={subject.children}
+							top={0}
+							left={typeWidth + scopeWidth + 4}
+							name="subject"
+							placeholder="subject"
+							focus={focused === 'subject'}
+							/>
+						<box top={2} left={0}>
+							<Area
+								{...body}
+								value={body.children}
+								top={0}
+								name="body"
+								placeholder="Body"
+								focus={focused === 'body'}
+								/>
+							<Area
+								{...footer}
+								value={footer.children}
+								top={bodyOffset}
+								name="footer"
+								placeholder="Footer"
+								focus={focused === 'footer'}
+								/>
+						</box>
 					</box>
+				</form>
+				{/* status line */}
+				<box
+					height={1}
+					bottom={0}
+					style={{fg: 'grey', border: {fg: 'grey'}}}
+					>
+					{
+						[
+							`${focused}: ∞/∞`,
+							isHeaderFocused && `header: ∞/∞`
+						]
+							.filter(Boolean).join(' | ')
+					}
 				</box>
-			</form>
+			</box>
 		);
 	}
 }

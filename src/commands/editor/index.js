@@ -12,6 +12,51 @@ const database = require('../../library/database');
 const catchLogs = require('../../library/catch-logs');
 const createReducers = require('../../reducers');
 
+const baseLineState = {
+	type: {
+		contents: ''
+	},
+	scope: {
+		contents: ''
+	},
+	subject: {
+		contents: ''
+	},
+	body: {
+		contents: ''
+	},
+	footer: {
+		contents: ''
+	}
+};
+
+function wrap(name, data) {
+	return {
+		[name]: {
+			contents: data[name]
+		}
+	};
+}
+
+function getInitialState(message, options, previous) {
+	const {environment, debug} = options;
+	const parsed = message ? commit.parse(message) : {};
+
+	return merge(
+		baseLineState,
+		previous,
+		{
+			environment,
+			debug,
+			...wrap('type', parsed),
+			...wrap('scope', parsed),
+			...wrap('subject', parsed),
+			...wrap('body', parsed),
+			...wrap('footer', parsed)
+		}
+	);
+}
+
 function wait(screen, store) {
 	return new Promise(resolve => {
 		// Let the user kill the application
@@ -36,47 +81,19 @@ function wait(screen, store) {
 }
 
 async function gitEditor(message, options) {
-	const parsed = message ? commit.parse(message) : {};
-	const filled = message.split('\n')[0].length > 0;
-
 	const db = await database.create(options.home);
 	const repo = await repository.create();
 	const hash = await repository.hash('HEAD', repo);
 
 	// Try to obtain last state for git hash
 	const previous = (await database.get(hash, db)) || {};
-	const form = filled ? parsed : {};
-
-	const initial = merge({}, previous, {
-		environment: options.environment,
-		debug: options.debug,
-		type: {
-			contents: form.type,
-			cursor: previous.type && previous.type.cursor ? previous.type.cursor : {x: 0, y: 0}
-		},
-		scope: {
-			contents: form.scope,
-			cursor: previous.scope && previous.scope.cursor ? previous.scope.cursor : {x: 0, y: 0}
-		},
-		subject: {
-			contents: form.subject,
-			cursor: previous.subject && previous.subject.cursor ? previous.subject.cursor : {x: 0, y: 0}
-		},
-		body: {
-			contents: form.body,
-			cursor: previous.body && previous.body.cursor ? previous.body.cursor : {x: 0, y: 0}
-		},
-		footer: {
-			contents: form.footer,
-			cursor: previous.footer && previous.footer.cursor ? previous.footer.cursor : {x: 0, y: 0}
-		}
-	});
+	const initial = getInitialState(message, options, previous);
 
 	// Setup the redux store
 	const reducers = createReducers();
 	const store = createStore(reducers, initial);
 
-	// Persist store changes to leveldb
+	// Persist store changes to node-localstorage
 	store.subscribe(async () => {
 		const state = omit(store.getState(), ['log']);
 		const hash = await repository.hash('HEAD', repo);
